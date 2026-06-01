@@ -10,104 +10,137 @@
         content="A simple form to request absence from work where you can specify the type of absence, dates, and reason. And there is also an approval process for the manager. 
     employee can also add extra document to support their request, The manager and HR can view the request and approve or reject it.">
 
-    <link rel="stylesheet" href="styletest.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="Pictures\ZKL_LOGO.png" type="image/x-icon">
 </head>
 
 
 <body>
-    <section class="container1">
-        <div class="profile-header">
-            <div class="brand">
-                <div class="CompanyLogo">
-                    <img src="Pictures/ZKL_LOGO.png" alt="Company Logo">
-                </div>
-                <div class="Headertext">
-                    <h1>ZKL ATELIER</h1>
-                    <h2>Absence Request Form</h2>
-                </div>
+    <section id="LoginForm">
+        <div class="brandlogin">
+            <div class="CompanyLogo">
+                <img src="Pictures/ZKL_LOGO.png" alt="Company Logo">
             </div>
-            <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
-                <a href="#HOME">HOME</a>
-                <a href="#MYREQUEST">MY REQUEST</a>
-                <a href="#MORE">MORE</a>
-            </nav>
+            <div class="Headertext">
+                <h1>ZKL ATELIER</h1>
+                <h2>Absence Request Form</h2>
+            </div>
         </div>
+        <h2 class="greeting">
+            welcome, please input your credentential
+        </h2>
 
-
-
-        <form id="absenceRequestForm" action="/submit-absence-request" method="POST" enctype="multipart/form-data">
-            <div class="ExtraNote">
-                <p>Please submit this form at least 2 week before request date, any less will be denied.</p>
-
-            </div>
-            <h2>Information Form</h2>
-            <div class="Employee_information">
-                <label for="employeeName">Employee Name:</label>
-                <input type="text" id="employeeName" name="employeeName" required>
-
-                <label for="employeeId">Employee ID:</label>
-                <input type="text" id="employeeId" name="employeeId" required>
-
-                <label for="emmployeeEmail">Employee Email:</label>
-                <input type="Email" id="EmployeeEmail" name="EmployeeEmail" required>
-            </div>
-            <div class="AbsentInfoSection">
-                <div class="datesection">
-                    <label for="startDate">Start Date:</label>
-                    <input type="date" id="startDate" name="startDate" required>
-
-                    <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate" name="endDate" required>
-
-                    <label for="absenceType">Type of Absence:</label>
-                    <select id="absenceType" name="absenceType" required>
-                        <option value="">Select an option</option>
-                        <option value="sickLeave">Sick Leave</option>
-                        <option value="vacation">Vacation</option>
-                        <option value="personalLeave">Personal Leave</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="specifyingdateandreason">
-                    <label for="reason">Reason for Absence:</label>
-                    <textarea id="reason" name="reason" rows="4" required></textarea>
-
-                    <label for="supportingDocument">Supporting Document (optional):</label>
-                    <label for="file" class="custum-file-upload">
-                        <div class="icon">
-                            <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
-                                        fill=""></path>
-                                </g>
-                            </svg>
-                        </div>
-                        <div class="text">
-                            <span>Click to upload image</span>
-                        </div>
-                        <input id="file" type="file">
-                    </label>
-
-
-                    <button type="submit">Submit Request</button>
+        <form class="Loginform">
+            <div class="Loginuser">
+                <p id="Login-Heading">Login</p>
+                <label for="LoginName"> Username : </label>
+                <input type="text" id="Username" name="username" placeholder="User" required>
+                <label for="employeeName">Password : </label>
+                <input class="input-field" type="password" id="Password" name="Password" placeholder="Password"
+                    required>
+                <div class="Sign-in-Sign-up">
+                    <button class="signin"> Log in</button>
+                    <button class="signup"> Sign up</button>
+                    <button class="iforgot">Forget Password</button>
                 </div>
             </div>
-            <br>
-            <br>
-            <h4 class="Note1">
-                Note: After submission, the request will be sent to the manager for approval. You can check the status
-                of
-                your request in the "My Requests" section.
-            </h4>
+            </div>
         </form>
 
+        <section id="container1" class="hidden">
+            <div class="profile-header">
+                <div class="brand">
+                    <div class="CompanyLogo">
+                        <img src="Pictures/ZKL_LOGO.png" alt="Company Logo">
+                    </div>
+                    <div class="Headertext">
+                        <h1>ZKL ATELIER</h1>
+                        <h2>Absence Request Form</h2>
+                    </div>
+                </div>
+                <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
+                    <a href="#HOME">HOME</a>
+                    <a href="#MYREQUEST">MY REQUEST</a>
+                    <a href="#MORE">MORE</a>
+                </nav>
+            </div>
 
 
-    </section>
+
+            <form id="absenceRequestForm" action="/submit-absence-request" method="POST" enctype="multipart/form-data">
+                <div class="ExtraNote">
+                    <p>Please submit this form at least 2 week before request date, any less will be denied.</p>
+
+                </div>
+                <h2>Information Form</h2>
+                <div class="Employee_information">
+                    <label for="employeeName">Employee Name:</label>
+                    <input type="text" id="employeeName" name="employeeName" required>
+
+                    <label for="employeeId">Employee ID:</label>
+                    <input type="text" id="employeeId" name="employeeId" required>
+
+                    <label for="emmployeeEmail">Employee Email:</label>
+                    <input type="Email" id="EmployeeEmail" name="EmployeeEmail" required>
+                </div>
+                <div class="AbsentInfoSection">
+                    <div class="datesection">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" required>
+
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" required>
+
+                        <label for="absenceType">Type of Absence:</label>
+                        <select id="absenceType" name="absenceType" required>
+                            <option value="">Select an option</option>
+                            <option value="sickLeave">Sick Leave</option>
+                            <option value="vacation">Vacation</option>
+                            <option value="personalLeave">Personal Leave</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="specifyingdateandreason">
+                        <label for="reason">Reason for Absence:</label>
+                        <textarea id="reason" name="reason" rows="4" required></textarea>
+
+                        <label for="supportingDocument">Supporting Document (optional):</label>
+                        <label for="file" class="custum-file-upload">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
+                                            fill=""></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="text">
+                                <span>Click to upload image</span>
+                            </div>
+                            <input id="file" type="file">
+                        </label>
+
+
+                        <button type="submit">Submit Request</button>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <h4 class="Note1">
+                    Note: After submission, the request will be sent to the manager for approval. You can check the
+                    status
+                    of
+                    your request in the "My Requests" section.
+                </h4>
+            </form>
+
+
+
+        </section>
 </body>
+<!-- Connect the script from javascript onto Html. Script is down here is because we want the page to be fully loaded first before lettimg JavaScript make changes -->
 
 </html>

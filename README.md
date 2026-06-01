@@ -1,9 +1,24 @@
 to do 
 
- architect the system & design th
- 
- make a submit button, When the employee submit show a pop up that say sumit sucessfully or failed when the ondition are not met ( When the internet is slowed or more i could think of or invalid file) As welll as tell employee to check the My request section.
+## 🚀 Project Progress & Roadmap
 
+### Done (Completed)
+- [x] Architected the system and basic layout
+- [x] Converted `<section class="...">` to unique `<section id="...">` for DOM targeting
+- [x] Create the login section inside the `<body>`
+### ⏳ To Do (Upcoming)
 
-polish the UI design
-
+- [ ] Implement the submit button with validation logic
+- [ ] Add success/failure pop-up alerts (handling slow internet/invalid files)
+- [ ] Polish the UI/UX design
+- [ ] Make the login say login sucessful when put the correct credential and lead to the main page
+- [ ] Make sign up works
+- [ ]Learn java script
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
