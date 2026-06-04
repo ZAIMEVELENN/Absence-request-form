@@ -8,9 +8,6 @@
   --GoldColor :#EFBF04;
   --font-family: 'Times New Roman', Times, serif;
 }
-.hidden {
-  display: none !important;
-}
 
 /* Login  */
 #LoginForm{
@@ -148,7 +145,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: var(--font-family);
-  text-transform: capitalize;
   box-sizing: border-box;
 
 }
@@ -159,16 +155,15 @@ body{
 
 #container1{
     display: block;
-    margin:1rem; 
+    margin:auto; 
 }
 .profile-header{
     padding: 10px;    
     width: 100%;
     max-width: 800px;
     background:  url('Pictures/emerald-green-silk-fabric.jpg'), linear-gradient(35deg, #00523e 0%, #003629 100%);
-    margin: auto;
-    margin: 0 auto 30px auto; /*30px put space at the bottom between pfheader and form */
-    border:#000000 solid ;
+    margin: 0;
+
     border-radius: 12px; /* Smooth corners like the mockup */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Soft premium shadow drop */
 } 
@@ -257,7 +252,7 @@ font-size: 18px;
 /* Start of absenceRequestForm */
 #absenceRequestForm {
     background-color: #FDFBF7;
-    border: #000000 solid 1px;
+    border: none;
 }
 
 
@@ -448,4 +443,6 @@ font-size: 18px;
   display: none;
 }
 
-
+.hidden {
+  display: none !important;
+}
