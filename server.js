@@ -118,3 +118,43 @@ app.post('/api/submit-absence', async (req, res) => {
     }
   }
 });
+
+// GET route to fetch all absence requests for preview
+app.get('/api/requests', async (req, res) => {
+  let connection;
+  try {
+    connection = await oracledb.getConnection(config);
+    
+    // Fetch rows — note: CLOBs come as Lob objects
+    const result = await connection.execute(`
+      SELECT 
+        EMPLOYEE_NAME AS "Name",
+        EMPLOYEE_ID AS "ID",
+        TO_CHAR(START_DATE, 'YYYY-MM-DD') AS "Startdate",
+        TO_CHAR(END_DATE, 'YYYY-MM-DD') AS "Enddate",
+        'Pending' AS "Status",
+        REASON_FOR_ABSENCE AS "Reason"  -- This is a CLOB
+      FROM REQUESTINFO
+      ORDER BY START_DATE DESC
+    `, [], { fetchInfo: { Reason: { type: oracledb.STRING, maxSize: 4000 } } });
+
+    // Now rows.Reason is a plain string!
+    const requests = result.rows.map(row => ({
+      Name: row[0] || '',
+      ID: row[1] || 0,
+      Startdate: row[2] || '',
+      Enddate: row[3] || '',
+      Status: row[4] || 'Pending',
+      Reason: row[5] || ''
+    }));
+
+    console.log("📤 Sending clean data:", requests);
+    res.json(requests);
+
+  } catch (err) {
+    console.error("💥 Final error:", err.message);
+    res.status(500).json({ error: "Failed to load requests" });
+  } finally {
+    if (connection) await connection.close();
+  }
+});

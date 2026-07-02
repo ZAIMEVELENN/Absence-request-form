@@ -448,4 +448,29 @@ font-size: 18px;
   display: none;
 }
 
+/*  SECTION FOR REQUESTPREVIEW RELATE TO DATA STRUCTURE */
+.Titlepage {
+  text-align: center;
+}
 
+#ReqFormReview {
+  margin: auto;
+  border: solid rgb(0, 0, 0) 2px;
+width: 90%;
+max-width: auto;
+;
+  
+}
+
+#Tablepreview {
+  width: 100%;
+  border-collapse: collapse; /* Removes double borders between cells */
+  table-layout: fixed; /* Forces all columns to be exactly the same width */
+}
+
+#Tablepreview th, 
+#Tablepreview td {
+  text-align: center; /* Centers the text horizontally */
+  padding: 10px; /* Moved your inline padding here */
+  border: 1px solid #ddd; /* Optional: adds a light border around cells */
+}

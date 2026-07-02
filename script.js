@@ -1,66 +1,55 @@
-// Toggle this to true to test the frontend and form submit success handling without running the backend node server
-const MOCK_MODE = true
+// Set to true ONLY for frontend testing without backend
+const MOCK_MODE = false;
 
+// Optional mock for offline testing
 if (typeof window !== "undefined" && MOCK_MODE) {
   const originalFetch = window.fetch;
-  window.fetch = async function (url, options) {
+  window.fetch = async function(url, options) {
     if (url.includes("/api/submit-absence")) {
-      console.log("Mock API Submit triggered with data:", options.body);
-      // Simulate network delay for realistic experience
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(r => setTimeout(r, 500));
+      return { json: async () => ({ success: true }) };
+    }
+    if (url.includes("/api/requests")) {
       return {
-        json: async () => ({ success: true })
+        json: async () => [
+          { Name: "John Doe", ID: 101, Startdate: "2026-07-01", Enddate: "2026-07-05", Status: "Pending", Reason: "Family vacation" }
+        ]
       };
     }
     return originalFetch.apply(this, arguments);
   };
 }
 
-// Wait for all HTML structural assets to load before running scripts
-window.addEventListener("DOMContentLoaded", () => {
-  
-  // ==========================================
-  // 1. LOGIN INTERFACES MANAGEMENT
-  // ==========================================
-  const loginButton = document.querySelector(".signin");
+document.addEventListener("DOMContentLoaded", () => {
+  // =============== LOGIN HANDLER ===============
+  const loginBtn = document.querySelector(".signin");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
 
-  if (loginButton) {
-    loginButton.addEventListener("click", function (event) {
-      event.preventDefault(); // Stop page from blanking/refreshing
-
-      // Grab elements dynamically
-      const usernameInput = document.getElementById("username").value;
-      const passwordInput = document.getElementById("password").value;
-
-      // Verify explicit administrative authorization credentials
-      if (usernameInput === "admin" && passwordInput === "123") {
-        alert("Login successful!");
-
-        // Add the hidden class to clear away the Login Box
+      if (user === "admin" && pass === "123") {
+// i removed the alert it egt annoying. -zaim
         document.getElementById("LoginForm").classList.add("hidden");
-
-        // Reveal the main Absence Form interface block cleanly
         document.getElementById("container1").classList.remove("hidden");
+        document.getElementById("ReqFormReview").classList.remove("hidden"); // Show preview
+        loadRequestData(); // ← LOAD DATA HERE!
       } else {
-        alert("Invalid username or password.");
+        alert("Invalid credentials.");
       }
     });
   }
 
-  // ==========================================
-  // 2. SUBMIT ABSENCE FORM PROCESS
-  // ==========================================
-  const absenceForm = document.getElementById("absenceRequestForm");
-
-  if (absenceForm) {
-    absenceForm.addEventListener("submit", async function (event) {
-      event.preventDefault(); // Stop default browser pipeline handling
-
-      // Collect field configurations matching your exact HTML layout casings
-      const formData = {
+  // =============== FORM SUBMISSION ===============
+  const form = document.getElementById("absenceRequestForm");
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
         employeeName: document.getElementById("employeeName").value,
-        employeeId: document.getElementById("employeeId").value, // Matches id="employeeId"
-        employeeEmail: document.getElementById("EmployeeEmail").value, // Matches id="EmployeeEmail"
+        employeeId: document.getElementById("employeeId").value,
+        employeeEmail: document.getElementById("EmployeeEmail").value,
         startDate: document.getElementById("startDate").value,
         endDate: document.getElementById("endDate").value,
         absenceType: document.getElementById("absenceType").value,
@@ -68,27 +57,62 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        // Dispatch data straight to your Node endpoint
-        const response = await fetch("http://localhost:3000/api/submit-absence", {
+        const res = await fetch("http://localhost:3000/api/submit-absence", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
         });
 
-        const result = await response.json();
-
+        const result = await res.json();
         if (result.success) {
-          alert("THANKS FOR SUBMITING PLEASE AWAIT FOR EMAIL WITHIN 48HOURS IF THERE IS NO REPLY YOU CAN CONTACT TO +855 8965 4048");
-          absenceForm.reset(); // Safely flushes fields clean
+          alert("Request submitted! Check 'My Requests' below.");
+          form.reset();
+          loadRequestData(); // Refresh table after submit
         } else {
-          alert("❌ Submission failed: " + result.error);
+          alert("Error: " + result.error);
         }
-      } catch (error) {
-        console.error("Network interface pipeline error:", error);
-        alert("❌ Could not reach the server. Make sure your node application is active.");
+      } catch (err) {
+        alert("Server unreachable. Is Node.js running?");
       }
     });
   }
 });
+
+// =============== LOAD REQUESTS FROM SERVER ===============
+async function loadRequestData() {
+  const tbody = document.getElementById("requestTableBody");
+  if (!tbody) return;
+
+  try {
+    const res = await fetch("http://localhost:3000/api/requests");
+    const requests = await res.json();
+
+    tbody.innerHTML = "";
+    if (requests.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">No requests found.</td></tr>`;
+      return;
+    }
+
+    requests.forEach(req => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${escapeHtml(req.Name)}</td>
+        <td>${req.ID}</td>
+        <td>${req.Startdate}</td>
+        <td>${req.Enddate}</td>
+        <td>${req.Status || 'Pending'}</td>
+        <td>${escapeHtml(req.Reason)}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6">Failed to load data.</td></tr>`;
+  }
+}
+
+// Prevent XSS by escaping HTML
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}

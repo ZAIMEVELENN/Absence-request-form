@@ -61,7 +61,7 @@
             </div>
             <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
                 <!-- <a href="#HOME">HOME</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
-                <!-- <a href="#MYREQUEST">MY REQUEST</a>  is removed for now since i havent learn php and it cannot run realtime data yet-->
+                <a href="#MYREQUEST">MY REQUEST</a>
                 <!-- <a href="#MORE">MORE</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
             </nav>
         </div>
@@ -143,19 +143,17 @@
         <div class="requestpreview">
             <table id="Tablepreview">
                 <thead>
-                    <tr>
-                        <th style="padding: 10px;">Name</th>
-                        <th style="padding: 10px;">ID</th>
-                        <th style="padding: 10px;">Startdate</th>
-                        <th style="padding: 10px;">Enddate</th>
-                        <th style="padding: 10px;">Status</th>
-                        <th style="padding: 10px;">Reason</th>
+                    <tr class="headerreq">
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Startdate</th>
+                        <th>Enddate</th>
+                        <th>Status</th>
+                        <th>Reason</th>
                     </tr>
                 </thead>
-                <!-- Tbody group the body and content in the table-->
-                <tbody>
-                    <!-- smth say data will be inset there -->
-
+                <tbody id="requestTableBody">
+                    <!-- Data rows will go here -->
                 </tbody>
             </table>
         </div>
