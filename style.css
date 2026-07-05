@@ -2,16 +2,22 @@
   --primary-color: #00674F;
   --secondary-color: #FFD770;
   --accent-color: #e74c3c;
-  --background-color: #FDFBF7;
+  --background-color: #F4EFE2;
   --text-color: #000000;
   --EmeraldDark :#002b21;
   --GoldColor :#EFBF04;
+  --greyish :#B9B1A4;
+  --Wheat : wheat;
   --font-family: 'Times New Roman', Times, serif;
 }
 .hidden {
   display: none !important;
 }
+body{ 
+    background-color: var(--background-color);
+    padding: clamp(16px, 4vw, 60px);
 
+}
 /* Login  */
 #LoginForm{
   background-color: var(--secondary-color);
@@ -57,6 +63,7 @@
   margin: auto;
   color: var(--GoldColor);
   font-size: 31px;
+
 }
 .Loginuser {
   display: flex;
@@ -97,7 +104,36 @@
   padding: 0.5rem;
   font-size: 18px;
 }
+.Loginuser #username {
+  text-transform: lowercase
+}
+/* SIGN UP SECTION */
 
+.signuptitle {
+  text-align: center;
+  color: var(--GoldColor);
+}
+
+#SignupBTN {
+  border: solid black 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  gap: 10px;
+  
+  width: 100%;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 3em;
+  
+  background-color: #003629;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+/* SIGN UP SECTION */
 .Sign-in-Sign-up {
   display: flex;
   flex-wrap: wrap;
@@ -152,10 +188,7 @@
   box-sizing: border-box;
 
 }
-body{ 
-    background-color: rgb(255, 255, 255);
-    padding: clamp(16px, 4vw, 60px);
-}
+
 
 #container1{
     display: block;
@@ -447,18 +480,19 @@ font-size: 18px;
 .custum-file-upload input {
   display: none;
 }
-
+/* +++++++++++++++++++REQBOARD.HTML+++++++++++++++++++++++ */
 /*  SECTION FOR REQUESTPREVIEW RELATE TO DATA STRUCTURE */
 .Titlepage {
   text-align: center;
+  border-right: solid var(--GoldColor) 2px;
+  border-left: solid var(--GoldColor) 2px;
 }
 
 #ReqFormReview {
   margin: auto;
-  border: solid rgb(0, 0, 0) 2px;
-width: 90%;
-max-width: auto;
-;
+  width: 90%;
+  max-width: auto;
+  background-color: var(--Wheat);
   
 }
 
@@ -472,5 +506,59 @@ max-width: auto;
 #Tablepreview td {
   text-align: center; /* Centers the text horizontally */
   padding: 10px; /* Moved your inline padding here */
-  border: 1px solid #ddd; /* Optional: adds a light border around cells */
+  border: 2px solid var(--GoldColor); /* Optional: adds a light border around cells */
 }
+
+/* +++++++++++++++++++REQBOARD.HTML+++++++++++++++++++++++ */
+#searchfunction {
+  border: var(--GoldColor) solid 2px;
+  width: 90%;
+  max-width: auto;
+  margin: auto;
+
+  display: flex;
+  flex-direction: row;
+  background-color: var(--primary-color);
+  padding: 15px;
+  
+}
+#searchfunction .Titlepage {
+  text-align: left;
+}
+
+#search {
+  /* Make the search input take up the remaining space */
+  flex: 1; 
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid var(--GoldColor);
+  border-radius: 5px;
+}
+#searchCategory:hover {
+  border-color: #fff;
+}
+.Titlepagesearch {
+  border: none;
+}
+#searchCategory {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid var(--GoldColor);
+  border-radius: 5px;
+  background-color: #FDFBF7; /* Light background to contrast the green */
+  color: var(--EmeraldDark);
+  font-weight: bold;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+#searchfunction {
+  /* Added align-items and gap to neatly align the new dropdown and input */
+  align-items: center; 
+  gap: 15px; 
+}
+
+
+
+
+
+

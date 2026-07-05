@@ -127,7 +127,7 @@ app.get('/api/requests', async (req, res) => {
     
     // Fetch rows — note: CLOBs come as Lob objects
     const result = await connection.execute(`
-      SELECT 
+      SELECT
         EMPLOYEE_NAME AS "Name",
         EMPLOYEE_ID AS "ID",
         TO_CHAR(START_DATE, 'YYYY-MM-DD') AS "Startdate",

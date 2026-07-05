@@ -12,7 +12,7 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="Pictures\ZILK_LOGO.png" type="image/x-icon">
-</head>
+</head>>
 
 
 <body>
@@ -33,8 +33,8 @@
         <form class="Loginform">
             <div class="Loginuser">
                 <p id="Login-Heading">Login</p>
-                <label for="LoginName"> Username : </label>
-                <input type="text" id="username" name="username" placeholder="User" autocapitalize="none">
+                <label for="LoginName"> username : </label>
+                <input type="text" id="username" autocapitalize="lowercase" name="username" placeholder="user">
                 <label for="employeeName">Password : </label>
                 <input class="input-field" type="password" id="password" name="Password" placeholder="Password"
                     required>
@@ -44,6 +44,15 @@
                     <button class="iforgot">Forget Password</button>
                 </div>
             </div>
+            <div id="SignupBTN" class="hidden">
+                <h2 class="signuptitle">Sign Up</h2>
+                <form id="signupForm">
+                    <input type="text" id="signupUsername" placeholder="Username" required>
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <button type="submit">Create Account</button>
+                    <button type="button" id="backToLogin">Back to Login</button>
+                </form>
             </div>
         </form>
     </section>
@@ -61,7 +70,7 @@
             </div>
             <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
                 <!-- <a href="#HOME">HOME</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
-                <a href="#MYREQUEST">MY REQUEST</a>
+                <a href="reqboard.html">MY REQUEST</a>
                 <!-- <a href="#MORE">MORE</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
             </nav>
         </div>
@@ -136,28 +145,7 @@
 
 
     </section>
-    <section id="ReqFormReview" class="hidden">
-        <h2 class="Titlepage">
-            Request Preview
-        </h2>
-        <div class="requestpreview">
-            <table id="Tablepreview">
-                <thead>
-                    <tr class="headerreq">
-                        <th>Name</th>
-                        <th>ID</th>
-                        <th>Startdate</th>
-                        <th>Enddate</th>
-                        <th>Status</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody id="requestTableBody">
-                    <!-- Data rows will go here -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+
 </body>
 
 <!-- Connect the script from javascript onto Html. Script is down here is because we want the page to be fully loaded first before lettimg JavaScript make changes -->
