@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Request Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Your Request Form">
+    <meta property="og:description"
+        content="A page that contain the user request & where the higer role can review the request and confirm or reject">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="Pictures\ZILK_LOGO.png" type="image/x-icon">
+</head>
+
+<body>
+    <section id="searchfunction">
+        <h2 class="Titlepagesearch">Search By:</h2>
+        <!-- New Dropdown for Search Category -->
+        <select id="searchCategory">
+            <option value="all">All Fields</option>
+            <option value="Name">Name</option>
+            <option value="id">Employee ID</option>
+            <option value="status">Status</option>
+        </select>
+
+        <!-- Existing Search Input -->
+        <input type="search" id="search" placeholder="Name/ID/Status">
+    </section>
+    <section id="ReqFormReview">
+        <h2 class="Titlepage">
+            Request Preview
+        </h2>
+        <div class="requestpreview">
+            <table id="Tablepreview">
+                <thead>
+                    <tr class="headerreq">
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Startdate</th>
+                        <th>Enddate</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="requestTableBody">
+                    <!-- Data rows will go here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</body>
+<script src="script.js">
+</script>
+
+</html>
