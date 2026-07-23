@@ -8,6 +8,61 @@
   --GoldColor :#EFBF04;
   --greyish :#B9B1A4;
   --Wheat : wheat;
+        /* ── Brand Colours ── */
+      --emerald-dark: #002b21;
+      /* EmeraldDark   */
+      --emerald: #00674F;
+      /* primary-color */
+      --emerald-mid: #003629;
+      /* card surface  */
+      --gold: #EFBF04;
+      /* GoldColor     */
+      --gold-light: #FFD770;
+      /* secondary     */
+      --cream: #F4EFE2;
+      /* background    */
+      --greyish: #B9B1A4;
+      /* greyish       */
+      --accent-red: #e74c3c;
+      /* accent-color  */
+
+      /* ── Surface & Structure ── */
+      --bg-dark: #001a13;
+      /* deeper than EmeraldDark for body */
+      --bg-card: #002b21;
+      /* EmeraldDark – main card bg       */
+      --bg-card-2: #003629;
+      /* emerald-mid  – elevated card     */
+      --border: rgba(239, 191, 4, 0.15);
+      /* gold-tinted border   */
+      --border-hover: rgba(239, 191, 4, 0.40);
+
+      /* ── Semantic Accents (mapped to brand) ── */
+      --accent-primary: #EFBF04;
+      /* gold  – primary interactive      */
+      --accent-green: #00674F;
+      /* emerald – success / approved     */
+      --accent-amber: #FFD770;
+      /* gold-light – pending / warning   */
+      --accent-red-ui: #e74c3c;
+      /* red – danger / rejected          */
+      --accent-teal: #2dd4bf;
+      /* kept for bar-fill gradient pop   */
+
+      /* ── Status colours ── */
+      --approved: #2ecc71;
+      --pending: #EFBF04;
+      --rejected: #e74c3c;
+
+      /* ── Typography ── */
+      --text-primary: #F4EFE2;
+      /* cream – headline text            */
+      --text-secondary: #B9B1A4;
+      /* greyish – body text              */
+      --text-muted: rgba(185, 177, 164, 0.50);
+      /* dimmed               */
+      --text-gold: #EFBF04;
+
   --font-family: 'Times New Roman', Times, serif;
 }
 .hidden {
@@ -16,7 +71,7 @@
 body{ 
     background-color: var(--background-color);
     padding: clamp(16px, 4vw, 60px);
-
+    margin-left: 260px;
 }
 /* Login  */
 #LoginForm{
@@ -195,9 +250,12 @@ body{
     margin:1rem; 
 }
 .profile-header{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     padding: 10px;    
     width: 100%;
-    max-width: 800px;
+    max-width: 80%;
     background:  url('Pictures/emerald-green-silk-fabric.jpg'), linear-gradient(35deg, #00523e 0%, #003629 100%);
     margin: auto;
     margin: 0 auto 30px auto; /*30px put space at the bottom between pfheader and form */
@@ -283,14 +341,12 @@ body{
 /* END OF NAVVAR FORM */
 
 
-.ExtraNote {
-color: red;
-font-size: 18px;
-}
 /* Start of absenceRequestForm */
 #absenceRequestForm {
     background-color: #FDFBF7;
     border: #000000 solid 1px;
+    max-width: 60.5%;
+    margin: auto;
 }
 
 
@@ -395,7 +451,10 @@ font-size: 18px;
   height: auto;
   width: auto;
 }
-
+.optionalfileuploadlabel {
+  color: var(--GoldColor);
+  font-weight: bold;
+}
 /* Mobile responsive - stack vertically on smaller screens */
 @media (max-width: 768px) {
   .specifyingdateandreason {
@@ -440,10 +499,10 @@ font-size: 18px;
 
 .custum-file-upload {
   height: 200px;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
-  align-items: space-between;
   gap: 20px;
   cursor: pointer;
   align-items: center;
@@ -509,6 +568,59 @@ font-size: 18px;
   border: 2px solid var(--GoldColor); /* Optional: adds a light border around cells */
 }
 
+.review-nav {
+  margin: 0 auto 20px auto;
+  width: 90%;
+}
+
+.review-message {
+  margin: 20px auto;
+  text-align: center;
+  font-size: 18px;
+}
+
+.request-action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.request-status-select {
+  width: 100%;
+  max-width: 140px;
+  padding: 8px;
+  border: 2px solid var(--primary-color);
+  border-radius: 6px;
+  background-color: #fff;
+  color: var(--text-color);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.approve-request,
+.reject-request {
+  padding: 8px 10px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.approve-request {
+  background-color: var(--primary-color);
+  color: var(--GoldColor);
+}
+
+.reject-request {
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+.approve-request:hover,
+.reject-request:hover {
+  border-color: var(--GoldColor);
+}
+
 /* +++++++++++++++++++REQBOARD.HTML+++++++++++++++++++++++ */
 #searchfunction {
   border: var(--GoldColor) solid 2px;
@@ -559,6 +671,207 @@ font-size: 18px;
 
 
 
+/* ======= LOGIN ERROR MESSAGE ======= */
+.login-error {
+  background-color: #ffe0e0;
+  color: #b00020;
+  border: 1.5px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Shake animation for wrong password */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-6px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+.shake {
+  animation: shake 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ======= USER BADGE (shown in navbar after login) ======= */
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 6px 12px;
+  background-color: rgba(0,0,0,0.25);
+  border-radius: 20px;
+  color: var(--GoldColor);
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#user-badge-name {
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
+
+.role-tag {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Role-specific badge colors */
+.role-ceo        { background-color: #EFBF04; color: #002b21; }
+.role-hr         { background-color: #5c85d6; color: #fff; }
+.role-manager    { background-color: #d67c5c; color: #fff; }
+.role-employee   { background-color: #6aab6a; color: #fff; }
+
+
+  /* ===== SIDEBAR NAV LAYOUT ===== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 260px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      padding: 32px 24px;
+      background: rgba(0, 27, 19, 0.95);
+      backdrop-filter: blur(18px);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      object-fit: contain;
+      border: 1px solid rgba(239, 191, 4, 0.4);
+    }
+
+    .sidebar-brand-text h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      line-height: 1.2;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-brand-text span {
+      font-size: 10px;
+      color: var(--text-secondary);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .sidebar-nav a {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(239, 191, 4, 0.08);
+      border-color: rgba(239, 191, 4, 0.25);
+      color: var(--gold-light);
+      transform: translateX(4px);
+    }
+
+    .sidebar-nav a.active {
+      background: rgba(239, 191, 4, 0.14);
+      border-color: rgba(239, 191, 4, 0.40);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(239, 191, 4, 0.08);
+    }
+
+    .last-updated {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .btn-refresh {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0, 103, 79, 0.15);
+      color: var(--gold-light);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-refresh:hover {
+      background: rgba(239, 191, 4, 0.14);
+      border-color: var(--border-hover);
+      color: var(--gold);
+    }
+
+    .btn-refresh svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.5s;
+    }
+
+    .btn-refresh.spinning svg {
+      transform: rotate(360deg);
+    }
 
 
 

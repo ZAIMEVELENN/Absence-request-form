@@ -51,8 +51,6 @@ to do
   - Server is offline: verified offline connection refusal.
 
 
-
-
 AI Tool/model that is used in this project
 
 -gemini 3.5

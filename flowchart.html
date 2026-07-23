@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZILK ATELIER — System Flowchart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --emerald:#00674F;--dark-emerald:#002b21;--gold:#EFBF04;--gold-light:#FFD770;
+      --cream:#FDFBF7;--bg:#0a1a14;--surface:#0f2419;--surface2:#163320;
+      --border:rgba(0,103,79,.45);--text:#e8f5e0;--muted:#6fad88;
+      --ceo:#9333ea;--hr:#0ea5e9;--manager:#f59e0b;--employee:#10b981;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1.5rem 4rem;}
+    .page-header{text-align:center;margin-bottom:3rem;}
+    .page-header .badge{display:inline-block;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 100%);color:var(--dark-emerald);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .9rem;border-radius:99px;margin-bottom:.9rem;}
+    .page-header h1{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;background:linear-gradient(135deg,#fff 30%,var(--gold-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;}
+    .page-header p{color:var(--muted);margin-top:.5rem;font-size:.9rem;}
+    .chart{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:0;}
+    .node{position:relative;width:100%;max-width:560px;border-radius:14px;padding:1rem 1.4rem;border:1.5px solid var(--border);background:var(--surface);transition:transform .2s,box-shadow .2s;}
+    .node:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,103,79,.3);}
+    .node.terminal{border-radius:99px;text-align:center;max-width:240px;}
+    .node.decision{border-radius:0;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);padding:2rem 3.5rem;text-align:center;max-width:300px;}
+    .node.decision:hover{transform:scale(1.03);}
+    .node.subprocess{border-left:4px solid var(--gold);border-radius:6px;}
+    .node.start{background:linear-gradient(135deg,#00674F,#004d3b);border-color:var(--emerald);}
+    .node.end{background:linear-gradient(135deg,#1a0030,#3b0080);border-color:#7c3aed;}
+    .node.auth{background:linear-gradient(135deg,#1a2a0a,#2a4a18);border-color:#4a8c30;}
+    .node.form{background:linear-gradient(135deg,#1a1500,#332b00);border-color:#9a7c00;}
+    .node.server{background:linear-gradient(135deg,#001528,#002548);border-color:#0066cc;}
+    .node.db{background:linear-gradient(135deg,#1a0018,#300030);border-color:#9c26b0;}
+    .node.review{background:linear-gradient(135deg,#180a00,#302000);border-color:#c06a00;}
+    .node.role-ceo{border-color:var(--ceo);background:linear-gradient(135deg,#160028,#2a0055);}
+    .node.role-hr{border-color:var(--hr);background:linear-gradient(135deg,#001828,#003060);}
+    .node.role-manager{border-color:var(--manager);background:linear-gradient(135deg,#1c1000,#3a2200);}
+    .node.role-employee{border-color:var(--employee);background:linear-gradient(135deg,#001a10,#003020);}
+    .node.err{border-color:#f87171;background:linear-gradient(135deg,#1a0000,#300000);}
+    .node-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;}
+    .node-title{font-size:1rem;font-weight:700;line-height:1.3;}
+    .node-sub{font-size:.78rem;color:var(--muted);margin-top:.3rem;line-height:1.4;}
+    .node.decision .node-title{font-size:.88rem;}
+    .node-icon{font-size:1.3rem;margin-bottom:.3rem;}
+    .arrow{display:flex;flex-direction:column;align-items:center;}
+    .arrow-line{width:2px;height:28px;background:linear-gradient(to bottom,var(--border),var(--emerald));}
+    .arrow-head{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--emerald);}
+    .arrow-label{font-size:.7rem;color:var(--gold);font-weight:600;background:var(--bg);padding:.15rem .55rem;border-radius:99px;border:1px solid rgba(239,191,4,.3);margin:-4px 0;z-index:1;}
+    .branch{display:flex;width:100%;max-width:820px;justify-content:center;align-items:flex-start;gap:1.5rem;position:relative;}
+    .branch-arm{display:flex;flex-direction:column;align-items:center;flex:1;max-width:360px;}
+    .branch-connector{display:flex;align-items:center;}
+    .h-line{height:2px;width:60px;background:var(--border);}
+    .h-arrow-head{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;}
+    .h-arrow-head.right{border-left:10px solid var(--emerald);}
+    .h-arrow-head.left{border-right:10px solid #7c3aed;}
+    .section-divider{width:100%;max-width:820px;margin:2.5rem 0 1rem;display:flex;align-items:center;gap:1rem;}
+    .section-divider .line{flex:1;height:1px;background:var(--border);}
+    .section-divider .tag{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:var(--surface);border:1px solid rgba(239,191,4,.3);border-radius:99px;padding:.25rem .8rem;white-space:nowrap;}
+    .legend{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-bottom:2.5rem;}
+    .legend-item{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);}
+    .legend-dot{width:10px;height:10px;border-radius:50%;}
+    .role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;width:100%;max-width:820px;}
+    .role-col{display:flex;flex-direction:column;align-items:center;gap:.6rem;}
+    .role-header{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .9rem;border-radius:99px;}
+    .role-header.ceo{background:rgba(147,51,234,.2);color:#c084fc;border:1px solid #9333ea;}
+    .role-header.hr{background:rgba(14,165,233,.2);color:#67e8f9;border:1px solid #0ea5e9;}
+    .role-header.manager{background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid #f59e0b;}
+    .role-header.employee{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid #10b981;}
+    code{font-family:'JetBrains Mono',monospace;font-size:.72rem;background:rgba(255,255,255,.06);border-radius:4px;padding:.1rem .35rem;color:var(--gold-light);}
+    .footer-note{text-align:center;margin-top:3rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);padding-top:1.5rem;}
+    @media(max-width:600px){.branch{flex-direction:column;align-items:center;}.h-line,.h-arrow-head{display:none;}}
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="badge">ZILK ATELIER</div>
+  <h1>Absence Request System<br>&#8212; System Flowchart &#8212;</h1>
+  <p>Complete lifecycle &nbsp;&middot;&nbsp; Employee &rarr; Server &rarr; Oracle DB &rarr; Review Board</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#00674F"></div> Start / End</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4a8c30"></div> Auth Layer</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9a7c00"></div> Form &amp; Validation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0066cc"></div> Express Server</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9c26b0"></div> Oracle Database</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#c06a00"></div> Review Flow</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9333ea"></div> CEO</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0ea5e9"></div> HR</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Manager</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Employee</div>
+</div>
+
+<main class="chart">
+
+  <!-- START -->
+  <div class="node terminal start">
+    <div class="node-icon">&#127760;</div>
+    <div class="node-title">Employee Opens Browser</div>
+    <div class="node-sub"><code>localhost:3000</code></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node process server">
+    <div class="node-label">server.js &middot; Express</div>
+    <div class="node-title">&#128196; Serve Static Files</div>
+    <div class="node-sub"><code>GET /</code> &rarr; sends <code>index.html</code>, <code>style.css</code>, <code>script.js</code></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- AUTH SECTION -->
+  <div class="section-divider"><div class="line"></div><div class="tag">&#128272; Authentication Phase</div><div class="line"></div></div>
+
+  <div class="node form" style="border-radius:4px 18px 4px 18px;">
+    <div class="node-label">index.html &middot; LoginForm</div>
+    <div class="node-title">&#128394; Display Login Screen</div>
+    <div class="node-sub">User enters <strong>Username</strong> &amp; <strong>Password</strong></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess server">
+    <div class="node-label">script.js &rarr; server.js</div>
+    <div class="node-title">&#128225; POST <code>/api/login</code></div>
+    <div class="node-sub">JSON payload: <code>{username, password}</code> &rarr; Express queries Oracle EMPLOYEES table via SQL JOIN (ROLE, DEPARTMENT, BRANCH)</div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node decision auth">
+    <div class="node-title">User found<br>in DB?</div>
+  </div>
+
+  <div class="branch">
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-arrow-head left"></div><div class="h-line"></div></div>
+      <div class="arrow-label">NO &#10007;</div>
+      <div class="node err">
+        <div class="node-title">&#10060; HTTP 401</div>
+        <div class="node-sub">"Invalid username or password" &middot; Shake animation on login card</div>
+      </div>
+      <div class="arrow"><div class="arrow-line" style="background:linear-gradient(to bottom,#7c3aed,#5b21b6)"></div><div class="arrow-head" style="border-top-color:#7c3aed"></div></div>
+      <div class="node terminal end" style="max-width:190px;"><div class="node-title" style="font-size:.85rem;">&#128260; Stay on Login</div></div>
+    </div>
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-line"></div><div class="h-arrow-head right"></div></div>
+      <div class="arrow-label">YES &#10003;</div>
+      <div class="node process auth">
+        <div class="node-title">&#9989; Map Role &amp; Branch</div>
+        <div class="node-sub"><code>mapRole()</code> &rarr; CEO / HR / MANAGER / EMPLOYEE<br><code>mapBranch()</code> &rarr; ALL (CEO, HR) or own branch (Manager)</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="node subprocess auth">
+        <div class="node-title">&#128190; Save Session to localStorage</div>
+        <div class="node-sub">Stores <code>id</code>, <code>username</code>, <code>role</code>, <code>branch</code> &middot; Shows user badge &middot; Hides LoginForm, reveals container1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow" style="margin-top:.5rem;"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- FORM SECTION -->
+  <div class="section-divider"><div class="line"></div><div class="tag">&#128221; Absence Request Phase</div><div class="line"></div></div>
+
+  <div class="node form" style="border-radius:4px 18px 4px 18px;">
+    <div class="node-label">index.html &middot; container1</div>
+    <div class="node-title">&#128203; Display Absence Request Form</div>
+    <div class="node-sub">
+      Employee Name &middot; Employee ID &middot; Employee Email<br>
+      Start Date &middot; End Date &middot; Absence Type &middot; Reason &middot; Document (optional)<br>
+      <span style="color:#f87171;font-size:.72rem;">&#9888; Must be submitted at least 2 weeks in advance</span>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess form">
+    <div class="node-label">script.js &middot; SubmitAbsenceRequest()</div>
+    <div class="node-title">&#128269; Client-Side Validation</div>
+    <div class="node-sub">
+      &#10122; End Date &ge; Start Date<br>
+      &#10123; Start Date &ge; today + 14 days<br>
+      &#10124; Email matches <code>/^[^@]+@[^@]+\.[^@]+$/</code><br>
+      &#10125; Employee ID must be numeric
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node decision form">
+    <div class="node-title">All inputs<br>valid?</div>
+  </div>
+
+  <div class="branch">
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-arrow-head left"></div><div class="h-line"></div></div>
+      <div class="arrow-label">INVALID &#10007;</div>
+      <div class="node err">
+        <div class="node-title">&#128683; Show Validation Error</div>
+        <div class="node-sub">Alert popup describes broken rule &middot; Form stays open</div>
+      </div>
+    </div>
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-line"></div><div class="h-arrow-head right"></div></div>
+      <div class="arrow-label">VALID &#10003;</div>
+      <div class="node subprocess server">
+        <div class="node-title">&#128225; POST <code>/api/submit-absence</code></div>
+        <div class="node-sub">JSON: <code>{employeeName, employeeId, employeeEmail,<br>startDate, endDate, absenceType, reason}</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow" style="margin-top:.5rem;"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- SERVER SECTION -->
+  <div class="section-divider"><div class="line"></div><div class="tag">&#9881; Server Processing Phase</div><div class="line"></div></div>
+
+  <div class="node process server">
+    <div class="node-label">server.js &middot; POST /api/submit-absence</div>
+    <div class="node-title">&#128229; Receive &amp; Parse Request Body</div>
+    <div class="node-sub">Destructure fields &middot; Validate <code>Number(employeeId)</code> &rarr; HTTP 400 if NaN</div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess db">
+    <div class="node-label">oracledb</div>
+    <div class="node-title">&#128268; Connect to Oracle Database</div>
+    <div class="node-sub"><code>localhost:1521/orcl</code> &middot; user: <code>C##ABSENCEREQUESTFORM</code></div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess db">
+    <div class="node-label">SQL INSERT with bind variables</div>
+    <div class="node-title">&#128189; INSERT INTO REQUESTINFO</div>
+    <div class="node-sub">
+      <code>REQUEST_ID</code> &larr; <code>req_id_seq.NEXTVAL</code><br>
+      Bind vars <code>:1&hellip;:7</code> &middot; <code>autoCommit: true</code> &middot; Connection closed safely in finally block
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node decision db">
+    <div class="node-title">DB Insert<br>Success?</div>
+  </div>
+
+  <div class="branch">
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-arrow-head left"></div><div class="h-line"></div></div>
+      <div class="arrow-label">ERROR &#10007;</div>
+      <div class="node err">
+        <div class="node-title">&#128165; HTTP 500 Response</div>
+        <div class="node-sub">Error message returned &middot; script.js alerts user &middot; Form stays populated</div>
+      </div>
+    </div>
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-line"></div><div class="h-arrow-head right"></div></div>
+      <div class="arrow-label">SUCCESS &#10003;</div>
+      <div class="node process server">
+        <div class="node-title">&#9989; HTTP 200 &middot; success: true</div>
+        <div class="node-sub">script.js shows confirmation &middot; Resets all form fields</div>
+      </div>
+      <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+      <div class="node db">
+        <div class="node-label">Oracle DB &middot; REQUESTINFO Table</div>
+        <div class="node-title">&#128451; Record Persisted</div>
+        <div class="node-sub">Status defaults to <code>"Pending"</code> in server memory map</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow" style="margin-top:.5rem;"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- REVIEW SECTION -->
+  <div class="section-divider"><div class="line"></div><div class="tag">&#128101; Role-Based Review Phase</div><div class="line"></div></div>
+
+  <div class="node process review">
+    <div class="node-label">reqboard.html / request-review.html</div>
+    <div class="node-title">&#128202; Load Review Board</div>
+    <div class="node-sub"><code>GET /api/review-requests</code> with <code>X-User-Id</code> header &middot; Server re-queries Oracle to verify role</div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node decision review">
+    <div class="node-title">Role has<br>Review Access?</div>
+  </div>
+
+  <div class="branch">
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-arrow-head left"></div><div class="h-line"></div></div>
+      <div class="arrow-label">EMPLOYEE &#10007;</div>
+      <div class="node err">
+        <div class="node-title">&#128683; HTTP 403 Forbidden</div>
+        <div class="node-sub">"Only CEO, HR, and Manager accounts can review requests"</div>
+      </div>
+    </div>
+    <div class="branch-arm">
+      <div class="branch-connector"><div class="h-line"></div><div class="h-arrow-head right"></div></div>
+      <div class="arrow-label">CEO / HR / MANAGER &#10003;</div>
+      <div class="node process review">
+        <div class="node-title">&#128203; Return Filtered Requests</div>
+        <div class="node-sub">MANAGER: own branch only &middot; CEO &amp; HR: all branches &middot; Ordered by START_DATE DESC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow" style="margin-top:.5rem;"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- ROLE GRID -->
+  <div class="role-grid">
+    <div class="role-col">
+      <div class="role-header ceo">&#128081; CEO</div>
+      <div class="node role-ceo" style="width:100%;">
+        <div class="node-title" style="font-size:.85rem;">Full Visibility</div>
+        <div class="node-sub">View all branches &middot; Approve / Reject any request &middot; Near-admin override</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <div class="role-header hr">&#127970; HR</div>
+      <div class="node role-hr" style="width:100%;">
+        <div class="node-title" style="font-size:.85rem;">Approve &amp; Edit</div>
+        <div class="node-sub">All branches &middot; Approve / Reject &middot; Change dates &middot; Grant roles</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <div class="role-header manager">&#128193; Manager</div>
+      <div class="node role-manager" style="width:100%;">
+        <div class="node-title" style="font-size:.85rem;">Branch-Scoped</div>
+        <div class="node-sub">Own branch only &middot; Approve / Reject &middot; Cannot change dates &mdash; must contact HR</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <div class="role-header employee">&#128100; Employee</div>
+      <div class="node role-employee" style="width:100%;">
+        <div class="node-title" style="font-size:.85rem;">Request Only</div>
+        <div class="node-sub">Submit requests &middot; View own records only &middot; No review panel access</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess review">
+    <div class="node-label">server.js &middot; POST /api/review-requests/:id/status</div>
+    <div class="node-title">&#9878; Reviewer Sets Decision</div>
+    <div class="node-sub">
+      Body: <code>{ status: "Approved" | "Rejected" }</code><br>
+      MANAGER branch restriction enforced &middot; Updates <code>requestStatusById</code> Map in server memory
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node subprocess form">
+    <div class="node-label">script.js &middot; Find_Matches() &mdash; Linear Search O(n)</div>
+    <div class="node-title">&#128270; Search &amp; Filter Requests</div>
+    <div class="node-sub">
+      Category: <strong>all</strong> / <strong>name</strong> / <strong>id</strong> / <strong>status</strong><br>
+      Iterates every record &middot; Case-insensitive substring match &middot; Returns filtered array for display
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <div class="node review" style="border-radius:4px 18px 4px 18px;">
+    <div class="node-label">request-review.html</div>
+    <div class="node-title">&#128204; Request Status Displayed to Reviewer</div>
+    <div class="node-sub">
+      Badge colours: <span style="color:#fcd34d;font-weight:600;">Pending</span> &nbsp;/&nbsp;
+      <span style="color:#6ee7b7;font-weight:600;">Approved</span> &nbsp;/&nbsp;
+      <span style="color:#fca5a5;font-weight:600;">Rejected</span>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- END -->
+  <div class="node terminal end">
+    <div class="node-icon">&#127937;</div>
+    <div class="node-title">Process Complete</div>
+  </div>
+
+</main>
+
+<div class="footer-note">
+  ZILK ATELIER &mdash; Absence Request System &nbsp;&middot;&nbsp;
+  Stack: <code>HTML</code> <code>CSS</code> <code>JavaScript</code> <code>Node.js / Express</code> <code>Oracle DB 21c</code>
+</div>
+
+</body>
+</html>

@@ -2,12 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>Request Form</title>
+    <title>Review Requests</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Your Request Form">
-    <meta property="og:description"
-        content="A page that contain the user request & where the higer role can review the request and confirm or reject">
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="Pictures\ZILK_LOGO.png" type="image/x-icon">
@@ -33,7 +30,7 @@
                     </svg>
                     Request Form
                 </a>
-                <a href="reqboard.html" class="active" id="nav-board">
+                <a href="reqboard.html" id="nav-board">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -44,7 +41,7 @@
                     </svg>
                     My Requests
                 </a>
-                <a href="request-review.html" id="nav-review">
+                <a href="request-review.html" class="active" id="nav-review">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -108,8 +105,8 @@
         </div>
         <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
             <a href="index.html" id="formLink">REQUEST FORM</a>
-            <a href="reqboard.html" id="myRequestsLink" class="active">MY REQUEST</a>
-            <a href="request-review.html" id="reviewRequestsLink" class="hidden">REVIEW REQUESTS</a>
+            <a href="reqboard.html" id="myRequestsLink">MY REQUEST</a>
+            <a href="request-review.html" id="reviewRequestsLink" class="active">REVIEW REQUESTS</a>
             <a href="dashboard.html" id="dashboardLink" class="hidden">DASHBOARD</a>
             <a href="performace.html" id="perfDashboardLink" class="hidden">PERFORMANCE</a>
             <button id="logoutBtn" class="logout-btn"
@@ -122,52 +119,50 @@
         </div>
     </header>
 
-    <div
-        style="max-width: 900px; margin: 0 auto 16px auto; display: flex; justify-content: space-between; align-items: center;">
-        <a href="index.html" class="btn-back-home"
-            style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #003629; color: #EFBF04; text-decoration: none; border-radius: 8px; font-weight: 700; border: 1px solid rgba(239, 191, 4, 0.3);">
-            ← Back to Request Form
-        </a>
-    </div>
-
-    <section id="searchfunction">
-        <h2 class="Titlepagesearch">Search By:</h2>
-        <!-- New Dropdown for Search Category -->
-        <select id="searchCategory">
-            <option value="all">All Fields</option>
-            <option value="Name">Name</option>
-            <option value="id">Employee ID</option>
-            <option value="status">Status</option>
-        </select>
-
-        <!-- Existing Search Input -->
-        <input type="search" id="search" placeholder="Name/ID/Status">
-    </section>
-    <section id="ReqFormReview">
-        <h2 class="Titlepage">
-            Request Preview
-        </h2>
-        <div class="requestpreview">
-            <table id="Tablepreview">
-                <thead>
-                    <tr class="headerreq">
-                        <th>Name</th>
-                        <th>ID</th>
-                        <th>Startdate</th>
-                        <th>Enddate</th>
-                        <th>Status</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody id="requestTableBody">
-                    <!-- Data rows will go here -->
-                </tbody>
-            </table>
-        </div>
+    <section id="reviewAccessMessage" class="hidden">
+        <h2 class="Titlepage">Access Denied</h2>
+        <p class="review-message">Only CEO, HR, and Manager accounts can review absence requests.</p>
+        <a href="reqboard.html">Go to My Requests</a>
     </section>
 
+    <section id="reviewPage">
+        <section id="searchfunction">
+            <h2 class="Titlepagesearch">Search By:</h2>
+            <select id="searchCategory">
+                <option value="all">All Fields</option>
+                <option value="Name">Name</option>
+                <option value="id">Employee ID</option>
+                <option value="status">Status</option>
+            </select>
+
+            <input type="search" id="search" placeholder="Name/ID/Status">
+        </section>
+
+        <section id="ReqFormReview">
+            <h2 class="Titlepage">Request Review</h2>
+            <div class="requestpreview">
+                <table id="Tablepreview">
+                    <thead>
+                        <tr class="headerreq">
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Branch</th>
+                            <th>Startdate</th>
+                            <th>Enddate</th>
+                            <th>Status</th>
+                            <th>Reason</th>
+                            <th>Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewTableBody">
+                        <!-- Review rows will go here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
 </body>
-<script src="script.js">
-</script>
+
+<script src="script.js"></script>
 
 </html>

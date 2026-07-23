@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Employee Performance Review — ZILK ATELIER</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="ZILK ATELIER Employee Performance Review Dashboard — KPI metrics, evaluation ratings, payroll summary, and assessment tables for HR & CEO management.">
+    <link rel="icon" href="Pictures/ZILK_LOGO.png" type="image/x-icon">
+
+    <!-- Google Fonts & Chart.js -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            /* ── Brand Colours ── */
+            --emerald-dark: #002b21;
+            --emerald: #00674F;
+            --emerald-mid: #003629;
+            --gold: #EFBF04;
+            --gold-light: #FFD770;
+            --cream: #F4EFE2;
+            --greyish: #B9B1A4;
+            --accent-red: #e74c3c;
+
+            /* ── Surface & Structure ── */
+            --bg-dark: #001a13;
+            --bg-card: #002b21;
+            --bg-card-2: #003629;
+            --border: rgba(239, 191, 4, 0.18);
+            --border-hover: rgba(239, 191, 4, 0.45);
+
+            /* ── Status colors ── */
+            --status-completed: #2ecc71;
+            --status-pending: #EFBF04;
+            --status-review: #3498db;
+
+            /* ── Typography ── */
+            --text-primary: #F4EFE2;
+            --text-secondary: #B9B1A4;
+            --text-muted: rgba(185, 177, 164, 0.55);
+            --text-gold: #EFBF04;
+
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.55);
+            --font: 'Inter', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+
+        /* ===== AMBIENT BACKGROUND ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 65% 45% at 15% 5%, rgba(0, 103, 79, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 45% 35% at 85% 85%, rgba(239, 191, 4, 0.12) 0%, transparent 55%),
+                url('Pictures/emerald-green-silk-fabric.jpg') center/cover no-repeat;
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== SIDEBAR NAV ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 260px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            padding: 32px 24px;
+            background: rgba(0, 27, 19, 0.95);
+            backdrop-filter: blur(18px);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-brand img {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: contain;
+            border: 1px solid rgba(239, 191, 4, 0.4);
+        }
+
+        .sidebar-brand-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--gold);
+            line-height: 1.2;
+        }
+
+        .sidebar-brand-text span {
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .sidebar-nav a {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(239, 191, 4, 0.08);
+            border-color: rgba(239, 191, 4, 0.25);
+            color: var(--gold-light);
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(239, 191, 4, 0.14);
+            border-color: rgba(239, 191, 4, 0.40);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* ===== MAIN PAGE CONTAINER ===== */
+        .performace-page {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: auto;
+            padding: 32px 32px 48px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .page-header p {
+            margin-top: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .btn-add-review {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: #001a13;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(239, 191, 4, 0.25);
+        }
+
+        .btn-add-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 191, 4, 0.4);
+        }
+
+        /* ===== KPI CARDS GRID ===== */
+        .performacegrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.25s, box-shadow 0.25s;
+            box-shadow: var(--shadow-card);
+        }
+
+        .kpi-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .kpi-block:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .kpi-block-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+        }
+
+        .kpi-block-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1.1;
+        }
+
+        .kpi-block-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== CHARTS SECTION ===== */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 992px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 24px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 240px;
+        }
+
+        /* ===== PERFORMANCE TABLE SECTION ===== */
+        .table-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 28px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .table-toolbar h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .search-input {
+            background: var(--bg-card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: var(--cream);
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+            width: 280px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--border-hover);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .perf-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 850px;
+        }
+
+        .perf-table th {
+            padding: 12px 16px;
+            background: rgba(0, 54, 41, 0.6);
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .perf-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(239, 191, 4, 0.08);
+            font-size: 14px;
+            color: var(--cream);
+            vertical-align: middle;
+        }
+
+        .perf-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .perf-table tbody tr:hover {
+            background: rgba(239, 191, 4, 0.05);
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            background: rgba(239, 191, 4, 0.15);
+            color: var(--gold-light);
+            border: 1px solid rgba(239, 191, 4, 0.3);
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--status-completed);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(239, 191, 4, 0.15);
+            color: var(--status-pending);
+            border: 1px solid rgba(239, 191, 4, 0.3);
+        }
+
+        .status-review {
+            background: rgba(52, 152, 219, 0.15);
+            color: var(--status-review);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--emerald-dark);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 600px;
+            padding: 28px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            color: var(--gold);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gold-light);
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--bg-card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--cream);
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: var(--gold);
+            color: #001a13;
+            border: none;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .performace-page {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== SIDEBAR NAV ===== -->
+    <aside class="sidebar" role="navigation">
+        <div class="sidebar-brand">
+            <img src="Pictures/ZILK_LOGO.png" alt="ZILK ATELIER Logo">
+            <div class="sidebar-brand-text">
+                <h1>ZILK ATELIER</h1>
+                <span>HR Command Center</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="index.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+                Request Form
+            </a>
+            <a href="reqboard.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                </svg>
+                My Requests
+            </a>
+            <a href="request-review.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 16v-4"></path>
+                    <path d="M12 8h.01"></path>
+                </svg>
+                Review
+            </a>
+            <a href="dashboard.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                </svg>
+                Absence
+            </a>
+            <a href="performace.html" class="active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 20V10M12 20V4M6 20v-6"></path>
+                </svg>
+                Performance
+            </a>
+            <a href="employee-dashboard.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                </svg>
+                Employees
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="performace-page">
+        <div class="page-header">
+            <div>
+                <h2>HR & CEO Performance Dashboard</h2>
+                <p>Track employee ratings, quarterly review progress, and payroll performance metrics.</p>
+            </div>
+            <button class="btn-add-review" id="openModalBtn">
+                <span>+</span> New Performance Review
+            </button>
+        </div>
+
+        <!-- KPI SUMMARY CARDS -->
+        <div class="performacegrid">
+            <div class="kpi-block">
+                <div class="kpi-block-label">Total Staff Evaluated</div>
+                <div class="kpi-block-value" id="kpi-total-emp">—</div>
+                <div class="kpi-block-sub">Active reviews on file</div>
+            </div>
+            <div class="kpi-block">
+                <div class="kpi-block-label">Total Monthly Payroll</div>
+                <div class="kpi-block-value" id="kpi-total-payroll">$0</div>
+                <div class="kpi-block-sub">Gross staff compensation</div>
+            </div>
+            <div class="kpi-block">
+                <div class="kpi-block-label">Average Performance Score</div>
+                <div class="kpi-block-value" id="kpi-avg-score">0.0 ⭐</div>
+                <div class="kpi-block-sub">Out of 5.0 scale</div>
+            </div>
+            <div class="kpi-block">
+                <div class="kpi-block-label">Target Completion</div>
+                <div class="kpi-block-value" id="kpi-completion">0%</div>
+                <div class="kpi-block-sub">Completed reviews</div>
+            </div>
+        </div>
+
+        <!-- VISUALIZATION CHARTS -->
+        <div class="charts-row">
+            <div class="chart-card">
+                <div class="chart-title">Rating Distribution per Department</div>
+                <div class="chart-wrapper">
+                    <canvas id="deptRatingChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Department Payroll Breakdown</div>
+                <div class="chart-wrapper">
+                    <canvas id="payrollChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- HR & CEO REQUIRED TABLE -->
+        <div class="table-section">
+            <div class="table-toolbar"
+                style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <h3>Employee Performance Evaluation Table</h3>
+                    <div class="status-chips" id="perfStatusChips" style="display: flex; gap: 6px;">
+                        <button type="button" class="perf-chip active" data-status="all"
+                            style="padding: 5px 12px; border-radius: 16px; border: 1px solid var(--border); background: rgba(239, 191, 4, 0.2); color: var(--gold); font-size: 12px; font-weight: 600; cursor: pointer;">All</button>
+                        <button type="button" class="perf-chip" data-status="Completed"
+                            style="padding: 5px 12px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); background: rgba(46, 204, 113, 0.1); color: var(--status-completed); font-size: 12px; font-weight: 600; cursor: pointer;">Completed</button>
+                        <button type="button" class="perf-chip" data-status="Pending Review"
+                            style="padding: 5px 12px; border-radius: 16px; border: 1px solid rgba(239, 191, 4, 0.3); background: rgba(239, 191, 4, 0.1); color: var(--status-pending); font-size: 12px; font-weight: 600; cursor: pointer;">Pending</button>
+                        <button type="button" class="perf-chip" data-status="Under Review"
+                            style="padding: 5px 12px; border-radius: 16px; border: 1px solid rgba(52, 152, 219, 0.3); background: rgba(52, 152, 219, 0.1); color: var(--status-review); font-size: 12px; font-weight: 600; cursor: pointer;">Under
+                            Review</button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" id="perfSearch" class="search-input"
+                        placeholder="Search employee, dept, position...">
+                    <button type="button" id="exportPerfCsvBtn"
+                        style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0, 103, 79, 0.4); color: var(--gold-light); font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                        📥 Export CSV
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="perf-table">
+                    <thead>
+                        <tr>
+                            <th>Emp ID</th>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Monthly Salary</th>
+                            <th>Rating (5.0)</th>
+                            <th>Executive Bonus Calc</th>
+                            <th>Status</th>
+                            <th>Evaluator</th>
+                        </tr>
+                    </thead>
+                    <tbody id="perfTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                Loading performance records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- NEW REVIEW MODAL -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add Employee Performance Review</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="perfForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="empId">Employee ID</label>
+                        <input type="number" id="empId" required placeholder="e.g. 106">
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeName">Full Name</label>
+                        <input type="text" id="employeeName" required placeholder="e.g. David Miller">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Human Resources">Human Resources</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position Title</label>
+                        <input type="text" id="position" required placeholder="e.g. Full Stack Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label for="salary">Monthly Salary ($)</label>
+                        <input type="number" id="salary" required step="100" placeholder="e.g. 4200">
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Rating (1.0 - 5.0)</label>
+                        <input type="number" id="rating" required step="0.1" min="1.0" max="5.0" placeholder="e.g. 4.7">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Review Status</label>
+                        <select id="status">
+                            <option value="Completed">Completed</option>
+                            <option value="Pending Review">Pending Review</option>
+                            <option value="Under Review">Under Review</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewer">Reviewer Role</label>
+                        <select id="reviewer">
+                            <option value="CEO">CEO</option>
+                            <option value="HR Manager">HR Manager</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label for="feedback">Executive Feedback / Comments</label>
+                        <textarea id="feedback" rows="3"
+                            placeholder="Enter evaluation details and targets achieved..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        let performanceData = [];
+        let deptRatingChart, payrollChart;
+
+        async function fetchPerformanceData() {
+            try {
+                const res = await fetch(`${API_BASE}/api/performance`);
+                const result = await res.json();
+                if (result.success && Array.isArray(result.reviews)) {
+                    performanceData = result.reviews;
+                } else {
+                    performanceData = getFallbackData();
+                }
+            } catch (err) {
+                console.warn('API error, loading offline performance data:', err);
+                performanceData = getFallbackData();
+            }
+            renderPerformanceDashboard();
+        }
+
+        function getFallbackData() {
+            return [
+                { reviewId: 1, empId: 101, employeeName: 'John Doe', department: 'Engineering', position: 'Senior Developer', salary: 4500, rating: 4.8, status: 'Completed', reviewPeriod: '2026 Q2', goalsAchieved: 95, attendanceRate: 98, reviewer: 'CEO', feedback: 'Outstanding technical leadership.' },
+                { reviewId: 2, empId: 102, employeeName: 'Jane Smith', department: 'Human Resources', position: 'HR Specialist', salary: 3800, rating: 4.5, status: 'Completed', reviewPeriod: '2026 Q2', goalsAchieved: 90, attendanceRate: 96, reviewer: 'HR Manager', feedback: 'Exceptional employee support.' },
+                { reviewId: 3, empId: 103, employeeName: 'Alex Johnson', department: 'Marketing', position: 'Marketing Lead', salary: 4100, rating: 3.9, status: 'Pending Review', reviewPeriod: '2026 Q2', goalsAchieved: 82, attendanceRate: 91, reviewer: 'HR Manager', feedback: 'Good campaign execution.' },
+                { reviewId: 4, empId: 104, employeeName: 'Sarah Williams', department: 'Finance', position: 'Financial Analyst', salary: 3900, rating: 4.2, status: 'Completed', reviewPeriod: '2026 Q2', goalsAchieved: 88, attendanceRate: 94, reviewer: 'CEO', feedback: 'Accurate financial modeling.' },
+                { reviewId: 5, empId: 105, employeeName: 'Michael Brown', department: 'Operations', position: 'Operations Officer', salary: 3200, rating: 3.5, status: 'Under Review', reviewPeriod: '2026 Q2', goalsAchieved: 75, attendanceRate: 89, reviewer: 'HR Manager', feedback: 'Meeting core KPIs.' }
+            ];
+        }
+
+        function renderPerformanceDashboard() {
+            // Update KPIs
+            const totalEmp = performanceData.length;
+            const totalPayroll = performanceData.reduce((sum, r) => sum + (r.salary || 0), 0);
+            const avgScore = totalEmp ? (performanceData.reduce((sum, r) => sum + (r.rating || 0), 0) / totalEmp).toFixed(1) : '0.0';
+            const completedCount = performanceData.filter(r => r.status === 'Completed').length;
+            const completionPct = totalEmp ? Math.round((completedCount / totalEmp) * 100) : 0;
+
+            document.getElementById('kpi-total-emp').textContent = totalEmp;
+            document.getElementById('kpi-total-payroll').textContent = '$' + totalPayroll.toLocaleString();
+            document.getElementById('kpi-avg-score').textContent = `${avgScore} ⭐`;
+            document.getElementById('kpi-completion').textContent = `${completionPct}%`;
+
+            renderTable(performanceData);
+            renderCharts();
+        }
+
+        let activePerfStatus = 'all';
+
+        function renderTable(data) {
+            const tbody = document.getElementById('perfTableBody');
+            let filtered = data;
+
+            if (activePerfStatus !== 'all') {
+                filtered = filtered.filter(r => r.status === activePerfStatus);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 20px;">No performance records found matching filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(r => {
+                let statusClass = 'status-pending';
+                if (r.status === 'Completed') statusClass = 'status-completed';
+                else if (r.status === 'Under Review') statusClass = 'status-review';
+
+                // Executive Bonus & Raise Calculator Logic
+                const rating = r.rating || 3.0;
+                let bonusText = 'Standard';
+                let bonusColor = '#B9B1A4';
+                if (rating >= 4.5) {
+                    bonusText = '🔥 +15% Raise / Bonus';
+                    bonusColor = '#2ecc71';
+                } else if (rating >= 4.0) {
+                    bonusText = '📈 +8% Salary Increase';
+                    bonusColor = '#EFBF04';
+                } else if (rating < 3.5) {
+                    bonusText = '⚠️ PIP Improvement';
+                    bonusColor = '#e74c3c';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>#${r.empId}</strong></td>
+                        <td>${escapeHtml(r.employeeName)}</td>
+                        <td>${escapeHtml(r.department)}</td>
+                        <td>${escapeHtml(r.position)}</td>
+                        <td><strong>$${(r.salary || 0).toLocaleString()}</strong></td>
+                        <td><span class="rating-badge">⭐ ${r.rating || '3.0'}</span></td>
+                        <td><span style="color:${bonusColor}; font-weight:700; font-size:12px;">${bonusText}</span></td>
+                        <td><span class="status-pill ${statusClass}">${escapeHtml(r.status)}</span></td>
+                        <td>${escapeHtml(r.reviewer || 'HR')}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // CSV Export Feature
+        document.getElementById('exportPerfCsvBtn').addEventListener('click', () => {
+            const headers = ['Emp ID', 'Employee Name', 'Department', 'Position', 'Monthly Salary', 'Rating', 'Status', 'Reviewer', 'Feedback'];
+            const rows = performanceData.map(r => [
+                r.empId, r.employeeName, r.department, r.position, r.salary, r.rating, r.status, r.reviewer, r.feedback
+            ]);
+            const csv = [headers, ...rows]
+                .map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `performance_evaluations_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Status Chip Event Listeners
+        document.getElementById('perfStatusChips').addEventListener('click', (e) => {
+            const chip = e.target.closest('.perf-chip');
+            if (!chip) return;
+            activePerfStatus = chip.dataset.status;
+            document.querySelectorAll('#perfStatusChips .perf-chip').forEach(c => {
+                c.style.background = '';
+                c.classList.remove('active');
+            });
+            chip.classList.add('active');
+            chip.style.background = 'rgba(239, 191, 4, 0.3)';
+            renderTable(performanceData);
+        });
+
+        function renderCharts() {
+            // Aggregate Department Ratings & Payroll
+            const depts = {};
+            performanceData.forEach(r => {
+                const d = r.department || 'General';
+                if (!depts[d]) depts[d] = { count: 0, totalRating: 0, totalSalary: 0 };
+                depts[d].count += 1;
+                depts[d].totalRating += (r.rating || 0);
+                depts[d].totalSalary += (r.salary || 0);
+            });
+
+            const labels = Object.keys(depts);
+            const avgRatings = labels.map(l => (depts[l].totalRating / depts[l].count).toFixed(1));
+            const salaries = labels.map(l => depts[l].totalSalary);
+
+            // Rating Chart
+            if (deptRatingChart) deptRatingChart.destroy();
+            const ctx1 = document.getElementById('deptRatingChart').getContext('2d');
+            deptRatingChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Avg Rating (Out of 5)',
+                        data: avgRatings,
+                        backgroundColor: '#EFBF04',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { max: 5.0, beginAtZero: true, grid: { color: 'rgba(239, 191, 4, 0.1)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { labels: { color: '#F4EFE2' } } }
+                }
+            });
+
+            // Payroll Chart
+            if (payrollChart) payrollChart.destroy();
+            const ctx2 = document.getElementById('payrollChart').getContext('2d');
+            payrollChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: salaries,
+                        backgroundColor: ['#00674F', '#EFBF04', '#FFD770', '#3498db', '#9b59b6'],
+                        borderWidth: 2,
+                        borderColor: '#002b21'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#F4EFE2' } } }
+                }
+            });
+        }
+
+        // Search Filter
+        document.getElementById('perfSearch').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = performanceData.filter(r =>
+                (r.employeeName || '').toLowerCase().includes(query) ||
+                (r.department || '').toLowerCase().includes(query) ||
+                (r.position || '').toLowerCase().includes(query) ||
+                String(r.empId).includes(query)
+            );
+            renderTable(filtered);
+        });
+
+        // Modal Controls
+        const modal = document.getElementById('reviewModal');
+        document.getElementById('openModalBtn').addEventListener('click', () => modal.classList.add('active'));
+        document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.remove('active'));
+        document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.remove('active'));
+
+        // Form Submit
+        document.getElementById('perfForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                empId: document.getElementById('empId').value,
+                employeeName: document.getElementById('employeeName').value,
+                department: document.getElementById('department').value,
+                position: document.getElementById('position').value,
+                salary: document.getElementById('salary').value,
+                rating: document.getElementById('rating').value,
+                status: document.getElementById('status').value,
+                reviewer: document.getElementById('reviewer').value,
+                feedback: document.getElementById('feedback').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/performance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    modal.classList.remove('active');
+                    document.getElementById('perfForm').reset();
+                    fetchPerformanceData();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Saved in local mode (Server unreachable)');
+                performanceData.unshift({
+                    ...payload,
+                    empId: Number(payload.empId),
+                    salary: Number(payload.salary),
+                    rating: Number(payload.rating),
+                    attendanceRate: 95
+                });
+                modal.classList.remove('active');
+                document.getElementById('perfForm').reset();
+                renderPerformanceDashboard();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        // Init page
+        fetchPerformanceData();
+    </script>
+</body>
+
+</html>

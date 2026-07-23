@@ -12,49 +12,123 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="Pictures\ZILK_LOGO.png" type="image/x-icon">
-</head>>
-
+</head>
 
 <body>
     <section id="LoginForm">
         <div class="brandlogin">
             <div class="CompanyLogo">
                 <img src="Pictures/ZILK_LOGO.png" alt="Company Logo">
-            </div>
+            </div>1`1
             <div class="Headertext">
                 <h1>ZILK ATELIER</h1>
                 <h2>Absence Request Form</h2>
             </div>
         </div>
         <h2 class="greeting">
-            welcome, please input your credentential
+            welcome, please input your credential
         </h2>
 
         <form class="Loginform">
             <div class="Loginuser">
                 <p id="Login-Heading">Login</p>
-                <label for="LoginName"> username : </label>
+                <label for="username"> username : </label>
                 <input type="text" id="username" autocapitalize="lowercase" name="username" placeholder="user">
-                <label for="employeeName">Password : </label>
+                <label for="password">Password : </label>
                 <input class="input-field" type="password" id="password" name="Password" placeholder="Password"
                     required>
+                <div id="login-error" class="login-error hidden">❌ Invalid username or password. Please try again.</div>
+
                 <div class="Sign-in-Sign-up">
-                    <button class="signin"> Log in</button>
-                    <button class="signup"> Sign up</button>
+                    <button class="signin" id="loginSubmitBtn"> Log in</button>
+                    <button class="signup" onclick="window.location.href='signup.html'"> Sign up</button>
                     <button class="iforgot">Forget Password</button>
                 </div>
             </div>
-            <div id="SignupBTN" class="hidden">
-                <h2 class="signuptitle">Sign Up</h2>
-                <form id="signupForm">
-                    <input type="text" id="signupUsername" placeholder="Username" required>
-                    <input type="email" id="signupEmail" placeholder="Email" required>
-                    <input type="password" id="signupPassword" placeholder="Password" required>
-                    <button type="submit">Create Account</button>
-                    <button type="button" id="backToLogin">Back to Login</button>
-                </form>
-            </div>
+
         </form>
+    </section>
+    <section><!-- ===== LEFT SIDEBAR NAVIGATION ===== -->
+        <aside class="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-brand">
+                <img src="Pictures/ZILK_LOGO.png" alt="ZILK ATELIER Logo">
+                <div class="sidebar-brand-text">
+                    <h1>ZILK ATELIER</h1>
+                    <span>HR Command Center</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Dashboard navigation">
+                <a href="index.html" class="active" id="nav-form">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Request Form
+                </a>
+                <a href="reqboard.html" id="nav-board">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    My Requests
+                </a>
+                <a href="request-review.html" id="nav-review">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    Review
+                </a>
+                <a href="dashboard.html" id="nav-dash">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Absence
+                </a>
+                <a href="performace.html" id="nav-performance">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 20V10M12 20V4M6 20v-6"></path>
+                    </svg>
+                    Performance
+                </a>
+                <a href="employee-dashboard.html" id="nav-employee-dash">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <path d="M20 8v6"></path>
+                        <path d="M23 11h-6"></path>
+                    </svg>
+                    Employees
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="last-updated" id="lastUpdatedLabel">Last updated: —</span>
+                <button class="btn-refresh" id="refreshBtn" aria-label="Refresh data">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </aside>
     </section>
     <!-- Section Id container class hidden and if there is no hidden then it is temporarily removed -->
     <section id="container1" class="hidden">
@@ -69,18 +143,22 @@
                 </div>
             </div>
             <nav id="main-nav" class="navnar" role="navigation" aria-label="Main navigation">
-                <!-- <a href="#HOME">HOME</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
-                <a href="reqboard.html">MY REQUEST</a>
-                <!-- <a href="#MORE">MORE</a> is removed for now since i havent learn php and it cannot run realtime data yet-->
+                <a href="index.html" id="formLink" class="active">REQUEST FORM</a>
+                <a href="reqboard.html" id="myRequestsLink">MY REQUEST</a>
+                <a href="request-review.html" id="reviewRequestsLink" class="hidden">REVIEW REQUESTS</a>
+                <a href="dashboard.html" id="dashboardLink" class="hidden">DASHBOARD</a>
+                <a href="performace.html" id="perfDashboardLink" class="hidden">PERFORMANCE</a>
+                <button id="logoutBtn" class="logout-btn"
+                    style="padding: 6px 14px; background: rgba(231,76,60,0.2); border: 1px solid rgba(231,76,60,0.5); color: #e74c3c; border-radius: 8px; font-weight: 700; cursor: pointer;">Log
+                    Out</button>
             </nav>
+            <div id="user-badge" class="user-badge hidden">
+                <span id="user-badge-name">User</span>
+                <span id="user-badge-role" class="role-tag">ROLE</span>
+            </div>
         </div>
 
-
-
         <form id="absenceRequestForm">
-            <div class="ExtraNote">
-                <p>Please submit this form at least 2 week before request date, any less will be denied.</p>
-            </div>
 
             <div class="Employee_information">
                 <label for="employeeName">Employee Name:</label>
@@ -89,8 +167,8 @@
                 <label for="employeeId">Employee ID:</label>
                 <input type="number" id="employeeId" name="employeeId" required>
 
-                <label for="emmployeeEmail">Employee Email:</label>
-                <input type="Email" id="EmployeeEmail" name="EmployeeEmail" required>
+                <label for="EmployeeEmail">Employee Email:</label>
+                <input type="email" id="EmployeeEmail" name="EmployeeEmail" required>
             </div>
 
             <div class="AbsentInfoSection">
@@ -114,8 +192,9 @@
                 <div class="specifyingdateandreason">
                     <label for="reason">Reason for Absence:</label>
                     <textarea id="reason" name="reason" rows="4" required></textarea>
-
-                    <label for="supportingDocument">Supporting Document (optional):</label>
+                    <div class="optionalfileuploadlabel">
+                        <p>Supporting Document (optional):</p>
+                    </div>
                     <label for="file" class="custum-file-upload">
                         <div class="icon">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -133,22 +212,15 @@
                     <button type="submit">Submit Request</button>
                 </div>
             </div>
-            <br>
-            <br>
+            <br><br>
             <h4 class="Note1">
                 Note: After submission, the request will be sent to the manager for approval. You can check the status
-                of your
-                request in the "My Requests" section.
+                of your request in the "My Requests" section.
             </h4>
         </form>
-
-
-
     </section>
 
+    <script src="script.js"></script>
 </body>
-
-<!-- Connect the script from javascript onto Html. Script is down here is because we want the page to be fully loaded first before lettimg JavaScript make changes -->
-<script src="script.js"></script>
 
 </html>

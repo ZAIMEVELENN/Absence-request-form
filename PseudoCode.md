@@ -3,7 +3,52 @@
 This document combines the plain-language walkthrough of the project files with the formal technical specifications for the **Data Structures** and **Algorithms** used in the application.
 
 ---
-
+# PART 0: LINEAR Algorithm that is used in this project in pseudoCode
+```
+FUNCTION Find_Matches(record_list, search_word, category = "all")
+    
+    // Step 1: Clean up the search word so it's easy to match
+    clean_word = remove extra spaces from search_word
+    clean_word = make clean_word completely lowercase
+    
+    // Step 2: Create an empty folder to hold the results
+    matches = empty list
+    
+    // Step 3: Look at every single record, one by one
+    FOR EACH record IN record_list:
+        
+        is_a_match = FALSE
+        
+        // Step 4: Check for a match based on the chosen category
+        IF category is "name":
+            IF clean_word contains actual letters AND record.Name contains clean_word:
+                is_a_match = TRUE
+                
+        ELSE IF category is "id":
+            IF clean_word is made of ONLY numbers AND record.ID contains clean_word:
+                is_a_match = TRUE
+                
+        ELSE IF category is "status":
+            IF record.Status contains clean_word:
+                is_a_match = TRUE
+                
+        ELSE (meaning category is "all"):
+            IF clean_word is found in record.Name OR
+               clean_word is found in record.ID OR
+               clean_word is found in record.StartDate OR
+               clean_word is found in record.EndDate OR
+               clean_word is found in record.Status OR
+               clean_word is found in record.Branch OR
+               clean_word is found in record.Reason:
+                is_a_match = TRUE
+        
+        // Step 5: If it's a match, save it to our results folder
+        IF is_a_match is TRUE:
+            add record to matches list
+            
+    // Step 6: Hand back the final list of matching records
+    RETURN matches
+```
 # PART 1: Technical Data Structures & Algorithms
 
 This section outlines the data schemas and logical algorithms used within the Absence Request Form, pointing out where structures are accessed and where logical rules are enforced.
@@ -283,17 +328,57 @@ ROUTE POST "/api/submit-absence":
 
 ---
 
+### C. Employee Performance Review Schema (`PerformanceReview`)
+* **Classification**: Object / Record Structure
+* **Purpose**: Holds executive evaluation scores, compensation metrics, and review statuses for HR and CEO oversight (`PERFORMANCE_REVIEWS` Oracle table).
+
+| Field Name | Data Type | Description | Constraints / Validation |
+| :--- | :--- | :--- | :--- |
+| `reviewId` | Number | Primary key identifier | Auto-generated ID |
+| `empId` | Number | Associated Employee ID | Required |
+| `employeeName` | String | Employee full name | Required |
+| `department` | String | Department (e.g. Engineering) | Required |
+| `position` | String | Position Title | Required |
+| `salary` | Number | Monthly gross compensation ($) | Required, positive number |
+| `rating` | Number | Score out of 5.0 | Range: 1.0 to 5.0 |
+| `status` | String | Evaluation status | `Completed`, `Pending Review`, `Under Review` |
+| `reviewer` | String | Executive reviewer role | `CEO`, `HR Manager` |
+| `feedback` | String | Executive feedback notes | Optional |
+
+---
+
+### B. Executive Salary & Bonus Recommendation Logic
+* **Algorithm**: Conditional Compensation Metric Classifier
+* **Data Structure Involved**: Reads employee rating from performance array and classifies bonus tier.
+
+```text
+PROCEDURE CalculateExecutiveBonus(employee_rating)
+    IF employee_rating >= 4.5 THEN
+        RETURN "+15% Salary Raise & Annual Bonus" (High Performer)
+    ELSE IF employee_rating >= 4.0 THEN
+        RETURN "+8% Standard Annual Increase" (Strong Contributor)
+    ELSE IF employee_rating >= 3.5 THEN
+        RETURN "Standard Compensation Rate" (Meeting Expectations)
+    ELSE
+        RETURN "Performance Improvement Plan (PIP) Required"
+```
+
+---
+
 # PART 3: Full User Journey Walkthrough
 
-```
-1. Employee opens the website in their browser.
-2. Employee logs in using credentials: admin / 123.
-3. script.js checks the matching credentials, hides the Login screen, and displays the form.
-4. Employee fills in their profile and request dates (at least 2 weeks in advance).
-5. Employee clicks "Submit Request".
-6. script.js POSTs the JSON data structure payload to server.js.
-7. server.js parses the input, executes SQL INSERT, commits, and returns a success response.
-8. script.js resets the form fields and alerts the user of successful submission.
+```text
+1. Employee or Executive opens the application in their web browser.
+2. User selects Quick Role Preset (CEO, HR Manager, Branch Manager, or Employee) or inputs credentials.
+3. script.js validates credentials against Oracle DB (or presentation fallback) and sets role permissions.
+4. If logged in as CEO or HR:
+   - Full access to Absence Dashboard (charts, KPIs, status chips, CSV exports).
+   - Full access to Performance Dashboard (department payroll charts, ratings breakdown, executive bonus calculations, and new review creation).
+5. If logged in as Manager:
+   - Access restricted to own branch request reviews (Phnom Penh).
+6. If logged in as Employee:
+   - Access limited to Absence Request Submission form and "My Requests" status board.
+7. Any submitted absence request or performance evaluation is committed directly to Oracle DB tables (`REQUESTINFO` & `PERFORMANCE_REVIEWS`).
 ```
 
 ---

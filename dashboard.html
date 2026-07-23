@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>HR Absence Dashboard — ZILK ATELIER</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="ZILK ATELIER HR Absence Dashboard — real-time overview of all absence requests, status breakdowns, and team analytics.">
+  <meta property="og:title" content="HR Absence Dashboard — ZILK ATELIER">
+  <meta property="og:description" content="Real-time HR dashboard for absence request management at ZILK ATELIER.">
+  <link rel="icon" href="Pictures/ZILK_LOGO.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* DASHBOARDDDDDDDDDDDDDDD */
+    /* ===== ZILK ATELIER DESIGN TOKENS ===== */
+    /* Sourced from style.css brand palette            */
+    :root {
+      /* ── Brand Colours ── */
+      --emerald-dark: #002b21;
+      /* EmeraldDark   */
+      --emerald: #00674F;
+      /* primary-color */
+      --emerald-mid: #003629;
+      /* card surface  */
+      --gold: #EFBF04;
+      /* GoldColor     */
+      --gold-light: #FFD770;
+      /* secondary     */
+      --cream: #F4EFE2;
+      /* background    */
+      --greyish: #B9B1A4;
+      /* greyish       */
+      --accent-red: #e74c3c;
+      /* accent-color  */
+
+      /* ── Surface & Structure ── */
+      --bg-dark: #001a13;
+      /* deeper than EmeraldDark for body */
+      --bg-card: #002b21;
+      /* EmeraldDark – main card bg       */
+      --bg-card-2: #003629;
+      /* emerald-mid  – elevated card     */
+      --border: rgba(239, 191, 4, 0.15);
+      /* gold-tinted border   */
+      --border-hover: rgba(239, 191, 4, 0.40);
+
+      /* ── Semantic Accents (mapped to brand) ── */
+      --accent-primary: #EFBF04;
+      /* gold  – primary interactive      */
+      --accent-green: #00674F;
+      /* emerald – success / approved     */
+      --accent-amber: #FFD770;
+      /* gold-light – pending / warning   */
+      --accent-red-ui: #e74c3c;
+      /* red – danger / rejected          */
+      --accent-teal: #2dd4bf;
+      /* kept for bar-fill gradient pop   */
+
+      /* ── Status colours ── */
+      --approved: #2ecc71;
+      --pending: #EFBF04;
+      --rejected: #e74c3c;
+
+      /* ── Typography ── */
+      --text-primary: #F4EFE2;
+      /* cream – headline text            */
+      --text-secondary: #B9B1A4;
+      /* greyish – body text              */
+      --text-muted: rgba(185, 177, 164, 0.50);
+      /* dimmed               */
+      --text-gold: #EFBF04;
+
+      /* ── Radii & Shadows ── */
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.55);
+      --font: 'Inter', 'Times New Roman', serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== AMBIENT BACKGROUND — silk-texture feel ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 65% 45% at 15% 5%, rgba(0, 103, 79, 0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(239, 191, 4, 0.10) 0%, transparent 55%),
+        url('Pictures/emerald-green-silk-fabric.jpg') center/cover no-repeat;
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+
+    /* ===== MAIN LAYOUT ===== */
+    .dashboard {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: auto;
+      /* Leave space for the left sidebar */
+      padding: 32px 32px 48px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .dashboard-header {
+      margin-bottom: 28px;
+    }
+
+    .dashboard-header h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--gold);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .dashboard-header p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: transform 0.2s, border-color 0.25s, box-shadow 0.25s;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Top accent bars mapped to brand colours */
+    .kpi-card.blue::before {
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    .kpi-card.teal::before {
+      background: linear-gradient(90deg, var(--emerald), #2ecc71);
+    }
+
+    .kpi-card.amber::before {
+      background: linear-gradient(90deg, var(--gold-light), #fff3a3);
+    }
+
+    .kpi-card.rose::before {
+      background: linear-gradient(90deg, var(--accent-red), #ff7f72);
+    }
+
+    .kpi-card.violet::before {
+      background: linear-gradient(90deg, var(--greyish), #d5cfc8);
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .kpi-icon.blue {
+      background: rgba(239, 191, 4, 0.15);
+    }
+
+    .kpi-icon.teal {
+      background: rgba(0, 103, 79, 0.25);
+    }
+
+    .kpi-icon.amber {
+      background: rgba(255, 215, 112, 0.15);
+    }
+
+    .kpi-icon.rose {
+      background: rgba(231, 76, 60, 0.18);
+    }
+
+    .kpi-icon.violet {
+      background: rgba(185, 177, 164, 0.15);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--gold);
+      transition: all 0.4s;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ===== CHARTS GRID ===== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .charts-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.25s;
+    }
+
+    .chart-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .chart-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chart-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+
+    .chart-card-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chart-container {
+      position: relative;
+      flex: 1;
+    }
+
+    .donut-wrapper {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .donut-center-value {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .donut-center-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-name {
+      flex: 1;
+      color: var(--text-secondary);
+    }
+
+    .legend-count {
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+
+    .legend-pct {
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .filters-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: rgba(0, 43, 33, 0.5);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .chip:hover {
+      background: rgba(239, 191, 4, 0.10);
+      border-color: var(--border-hover);
+      color: var(--gold-light);
+    }
+
+    .chip.active {
+      background: rgba(239, 191, 4, 0.18);
+      border-color: rgba(239, 191, 4, 0.55);
+      color: var(--gold);
+    }
+
+    .chip.approved.active {
+      background: rgba(46, 204, 113, 0.15);
+      border-color: rgba(46, 204, 113, 0.45);
+      color: var(--approved);
+    }
+
+    .chip.pending.active {
+      background: rgba(239, 191, 4, 0.15);
+      border-color: rgba(239, 191, 4, 0.45);
+      color: var(--pending);
+    }
+
+    .chip.rejected.active {
+      background: rgba(231, 76, 60, 0.15);
+      border-color: rgba(231, 76, 60, 0.45);
+      color: var(--rejected);
+    }
+
+    .filter-search {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      height: 36px;
+      transition: border-color 0.2s;
+    }
+
+    .filter-search:focus-within {
+      border-color: var(--border-hover);
+    }
+
+    .filter-search svg {
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .filter-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--text-primary);
+      width: 180px;
+    }
+
+    .filter-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ===== DATA TABLE ===== */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .table-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 54, 41, 0.5);
+    }
+
+    .table-card-header-left h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+
+    .table-card-header-left p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .table-card-header-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-export {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0, 103, 79, 0.20);
+      color: var(--gold-light);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: rgba(239, 191, 4, 0.14);
+      border-color: var(--border-hover);
+      color: var(--gold);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: rgba(0, 54, 41, 0.55);
+    }
+
+    th {
+      padding: 12px 20px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    th:hover {
+      color: var(--gold-light);
+    }
+
+    th .sort-icon {
+      display: inline-block;
+      margin-left: 4px;
+      opacity: 0.45;
+      font-size: 10px;
+      vertical-align: middle;
+    }
+
+    th.sort-asc .sort-icon::after {
+      content: ' ↑';
+      opacity: 1;
+      color: var(--gold);
+    }
+
+    th.sort-desc .sort-icon::after {
+      content: ' ↓';
+      opacity: 1;
+      color: var(--gold);
+    }
+
+    th:not(.sort-asc):not(.sort-desc) .sort-icon::after {
+      content: ' ↕';
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(239, 191, 4, 0.06);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(239, 191, 4, 0.05);
+    }
+
+    td {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    td.td-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    td.td-id {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Status Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .badge.approved {
+      background: rgba(46, 204, 113, 0.15);
+      color: var(--approved);
+    }
+
+    .badge.approved::before {
+      background: var(--approved);
+    }
+
+    .badge.pending {
+      background: rgba(239, 191, 4, 0.15);
+      color: var(--pending);
+    }
+
+    .badge.pending::before {
+      background: var(--pending);
+    }
+
+    .badge.rejected {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--rejected);
+    }
+
+    .badge.rejected::before {
+      background: var(--rejected);
+    }
+
+    /* ── Absence Type Tag ── */
+    .absence-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(239, 191, 4, 0.12);
+      color: var(--gold-light);
+      border: 1px solid rgba(239, 191, 4, 0.22);
+    }
+
+    /* ── Duration Pill ── */
+    .duration-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: rgba(0, 103, 79, 0.25);
+      color: var(--text-secondary);
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pagination-info {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: 4px;
+    }
+
+    .page-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0, 43, 33, 0.5);
+      color: var(--text-secondary);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover {
+      background: rgba(239, 191, 4, 0.14);
+      border-color: var(--border-hover);
+      color: var(--gold);
+    }
+
+    .page-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--emerald-dark);
+      font-weight: 700;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card-2) 25%, rgba(239, 191, 4, 0.05) 50%, var(--bg-card-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* ===== SECTION DIVIDER ===== */
+    .timeline-section {
+      margin-top: 24px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-hover), transparent);
+    }
+
+    /* ===== MINI TABLE (Top Employees) ===== */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .mini-table th {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--gold);
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+    }
+
+    .mini-table td {
+      padding: 10px 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(239, 191, 4, 0.06);
+    }
+
+    .mini-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .rank.r1 {
+      background: rgba(239, 191, 4, 0.25);
+      color: var(--gold);
+    }
+
+    .rank.r2 {
+      background: rgba(185, 177, 164, 0.20);
+      color: var(--greyish);
+    }
+
+    .rank.r3 {
+      background: rgba(0, 103, 79, 0.25);
+      color: #2ecc71;
+    }
+
+    .rank.rn {
+      background: rgba(0, 43, 33, 0.5);
+      color: var(--text-muted);
+    }
+
+    .bar-bg {
+      height: 6px;
+      background: rgba(239, 191, 4, 0.08);
+      border-radius: 3px;
+      width: 100%;
+      min-width: 80px;
+    }
+
+    .bar-fill {
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--emerald), var(--gold));
+      transition: width 0.8s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--text-primary);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      flex-shrink: 0;
+    }
+
+    /* ===== FUTURE EXPANSION WORKSPACE ===== */
+    .future-workspace {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .future-workspace-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .future-workspace-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .future-workspace-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 400px;
+    }
+
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .placeholder-card {
+      background: var(--bg-card);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 12px;
+      min-height: 160px;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .placeholder-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-2);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .placeholder-icon {
+      font-size: 36px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .placeholder-card:hover .placeholder-icon {
+      opacity: 1;
+    }
+
+    .placeholder-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .placeholder-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      max-width: 220px;
+    }
+
+    .placeholder-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(239, 191, 4, 0.12);
+      color: var(--gold);
+      border: 1px solid rgba(239, 191, 4, 0.2);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 992px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        width: 100%;
+        max-height: 100vh;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        gap: 16px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+      }
+
+      .sidebar-brand {
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+        order: 3;
+        width: 100%;
+        padding: 8px 0 0;
+        border-top: 1px solid rgba(239, 191, 4, 0.08);
+        margin-top: 8px;
+      }
+
+      .sidebar-nav a {
+        padding: 7px 14px;
+        font-size: 12px;
+      }
+
+      .sidebar-nav a:hover {
+        transform: translateY(-1px);
+      }
+
+      .sidebar-footer {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: none;
+        order: 2;
+        flex-shrink: 0;
+      }
+
+      .last-updated {
+        display: none;
+      }
+
+      .btn-refresh {
+        width: auto;
+        padding: 7px 14px;
+      }
+
+      .dashboard {
+        margin: auto;
+        padding: 100px 20px 48px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .sidebar-brand-text span {
+        display: none;
+      }
+
+      .sidebar-nav a {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
+      .dashboard {
+        padding: 96px 12px 48px;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .future-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-search input {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section><!-- ===== LEFT SIDEBAR NAVIGATION ===== -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="sidebar-brand">
+        <img src="Pictures/ZILK_LOGO.png" alt="ZILK ATELIER Logo">
+        <div class="sidebar-brand-text">
+          <h1>ZILK ATELIER</h1>
+          <span>HR Command Center</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Dashboard navigation">
+        <a href="index.html" id="nav-form">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Request Form
+        </a>
+        <a href="reqboard.html" id="nav-board">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          My Requests
+        </a>
+        <a href="request-review.html" id="nav-review">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
+          </svg>
+          Review
+        </a>
+        <a href="dashboard.html" class="active" id="nav-dash">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+          </svg>
+          Absence Review
+        </a>
+        <a href="performace.html" id="nav-performance">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 20V10M12 20V4M6 20v-6"></path>
+          </svg>
+          Performance
+        </a>
+        <a href="employee-dashboard.html" id="nav-employee-dash">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <path d="M20 8v6"></path>
+            <path d="M23 11h-6"></path>
+          </svg>
+          Employees
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="last-updated" id="lastUpdatedLabel">Last updated: —</span>
+        <button class="btn-refresh" id="refreshBtn" aria-label="Refresh data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </aside>
+  </section>
+  <!-- ===== MAIN DASHBOARD ===== -->
+  <main class="dashboard" id="main-content">
+    <!-- Page heading -->
+    <div class="dashboard-header">
+      <h2>Absence Request Dashboard</h2>
+      <p>Real-time overview of all employee absence requests across branches.</p>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card blue">
+        <div class="kpi-icon blue">📋</div>
+        <div class="kpi-label">Total Requests</div>
+        <div class="kpi-value" id="kpiTotal">—</div>
+        <div class="kpi-sub">All time submissions</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-icon teal">✅</div>
+        <div class="kpi-label">Approved</div>
+        <div class="kpi-value" id="kpiApproved">—</div>
+        <div class="kpi-sub" id="kpiApprovedPct">— of total</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-icon amber">⏳</div>
+        <div class="kpi-label">Pending</div>
+        <div class="kpi-value" id="kpiPending">—</div>
+        <div class="kpi-sub" id="kpiPendingPct">Awaiting review</div>
+      </div>
+      <div class="kpi-card rose">
+        <div class="kpi-icon rose">❌</div>
+        <div class="kpi-label">Rejected</div>
+        <div class="kpi-value" id="kpiRejected">—</div>
+        <div class="kpi-sub" id="kpiRejectedPct">— of total</div>
+      </div>
+      <div class="kpi-card violet">
+        <div class="kpi-icon violet">📅</div>
+        <div class="kpi-label">Avg. Duration</div>
+        <div class="kpi-value" id="kpiAvgDays">—</div>
+        <div class="kpi-sub">Days per request</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+      <!-- Donut: Status Breakdown -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Status Breakdown</div>
+            <div class="chart-card-sub">Request distribution by status</div>
+          </div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donutChart"></canvas>
+          <div class="donut-center">
+            <div class="donut-center-value" id="donutTotal">0</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="legend" id="donutLegend"></div>
+      </div>
+
+      <!-- Bar: Absence Type -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Absence by Type</div>
+            <div class="chart-card-sub">Requests grouped by leave category</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:220px;">
+          <canvas id="typeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Bar: Monthly Trend (simulated) -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Monthly Volume</div>
+            <div class="chart-card-sub">Requests submitted per month</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:220px;">
+          <canvas id="monthChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECOND ROW: Top Absentees + Branch breakdown -->
+    <div class="charts-grid" style="grid-template-columns: 1fr 1fr;">
+      <!-- Top Employees by Count -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Top Employees by Requests</div>
+            <div class="chart-card-sub">Most frequent absence submitters</div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Employee</th>
+                <th>Requests</th>
+                <th>Volume</th>
+              </tr>
+            </thead>
+            <tbody id="topEmployeesBody">
+              <tr>
+                <td colspan="4" class="empty-state">
+                  <div class="icon">⌛</div>
+                  <p>Loading…</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Branch distribution bar -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Requests by Branch</div>
+            <div class="chart-card-sub">Absence load across office locations</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:220px;">
+          <canvas id="branchChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL DATA TABLE -->
+    <div class="timeline-section">
+      <div class="section-title">All Absence Requests</div>
+
+      <!-- Filters -->
+      <div class="filters-bar" id="filtersBar">
+        <span class="filter-label">Filter:</span>
+        <div class="filter-chips" id="statusChips">
+          <span class="chip active" data-status="all">All</span>
+          <span class="chip approved" data-status="Approved">Approved</span>
+          <span class="chip pending" data-status="Pending">Pending</span>
+          <span class="chip rejected" data-status="Rejected">Rejected</span>
+        </div>
+        <div class="filter-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="tableSearch" placeholder="Search name, ID, branch…" aria-label="Search requests">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-header-left">
+            <h3>Request Records</h3>
+            <p id="tableCount">Loading data…</p>
+          </div>
+          <div class="table-card-header-right">
+            <button class="btn-export" id="exportCsvBtn" aria-label="Export to CSV">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="mainTable" aria-label="Absence requests table">
+            <thead>
+              <tr>
+                <th data-col="Name">Employee<span class="sort-icon"></span></th>
+                <th data-col="ID">ID<span class="sort-icon"></span></th>
+                <th data-col="Branch">Branch<span class="sort-icon"></span></th>
+                <th data-col="absenceType">Type<span class="sort-icon"></span></th>
+                <th data-col="Startdate">Start Date<span class="sort-icon"></span></th>
+                <th data-col="Enddate">End Date<span class="sort-icon"></span></th>
+                <th data-col="duration">Duration<span class="sort-icon"></span></th>
+                <th data-col="Status">Status<span class="sort-icon"></span></th>
+              </tr>
+            </thead>
+            <tbody id="mainTableBody">
+              <!-- populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="paginationBar">
+          <span class="pagination-info" id="paginationInfo">—</span>
+          <div class="pagination-controls" id="paginationControls"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FUTURE EXPANSION WORKSPACE ===== -->
+    <section class="future-workspace" aria-label="Future expansion workspace">
+      <div class="future-workspace-header">
+        <div>
+          <h3 class="future-workspace-title">Future Expansion Workspace</h3>
+          <p class="future-workspace-sub">Reserved slots for upcoming dashboard widgets — drag components here as needs
+            evolve.</p>
+        </div>
+      </div>
+      <div class="future-grid">
+        <article class="placeholder-card">
+          <span class="placeholder-icon">📊</span>
+          <h4 class="placeholder-title">Analytics Widget</h4>
+          <p class="placeholder-desc">Add custom charts, KPIs, or trend visualizations for deeper insights.</p>
+          <span class="placeholder-badge">Planned</span>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-icon">📅</span>
+          <h4 class="placeholder-title">Team Calendar</h4>
+          <p class="placeholder-desc">Integrate a shared absence calendar with drag-and-drop scheduling.</p>
+          <span class="placeholder-badge">Planned</span>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-icon">🔔</span>
+          <h4 class="placeholder-title">Notifications Panel</h4>
+          <p class="placeholder-desc">Real-time alerts for approvals, rejections, and upcoming absences.</p>
+          <span class="placeholder-badge">Planned</span>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-icon">📈</span>
+          <h4 class="placeholder-title">Predictive Insights</h4>
+          <p class="placeholder-desc">ML-powered forecasts for absence trends and resource planning.</p>
+          <span class="placeholder-badge">Future</span>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-icon">👥</span>
+          <h4 class="placeholder-title">Team Comparison</h4>
+          <p class="placeholder-desc">Side-by-side branch or department absence benchmarking.</p>
+          <span class="placeholder-badge">Planned</span>
+        </article>
+        <article class="placeholder-card">
+          <span class="placeholder-icon">📋</span>
+          <h4 class="placeholder-title">Export & Reports</h4>
+          <p class="placeholder-desc">Scheduled PDF/Excel reports with custom templates and filters.</p>
+          <span class="placeholder-badge">Planned</span>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="alert">
+    <div class="toast-dot"></div>
+    <span id="toastMsg">Data refreshed</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
