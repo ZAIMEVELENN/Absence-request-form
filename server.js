@@ -2,8 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const oracledb = require('oracledb');
+const bcrypt = require('bcrypt');
 const path = require('path');
 require('dotenv').config();
+
+const SALT_ROUNDS = 10;
 
 const app = express();
 
@@ -88,11 +91,21 @@ app.post('/api/login', async (req, res) => {
       });
     }
 
-    const [dbEmpId, dbUsername, dbPassword, dbRoleName, dbBranchName, dbEmail] = result.rows[0];
-    console.log(`[LOGIN DB USER] id: ${dbEmpId}, username: "${dbUsername}", password in DB: "${dbPassword}", role: "${dbRoleName}", branch: "${dbBranchName}"`);
+    const [dbEmpId, dbUsername, dbPasswordHash, dbRoleName, dbBranchName, dbEmail] = result.rows[0];
 
-    if (dbPassword !== password) {
-      console.log(`[LOGIN FAILED] password mismatch. input: "${password}", db: "${dbPassword}"`);
+    // Try bcrypt compare first (for hashed passwords), fall back to plaintext (legacy)
+    let passwordMatch = false;
+    try {
+      passwordMatch = await bcrypt.compare(password, dbPasswordHash);
+    } catch (_) {
+      // hash may not be a valid bcrypt string — try plaintext
+    }
+    if (!passwordMatch) {
+      passwordMatch = (dbPasswordHash === password);
+    }
+
+    if (!passwordMatch) {
+      console.log(`[LOGIN FAILED] password mismatch for user "${dbUsername}"`);
       return res.status(401).json({
         success: false,
         error: 'Invalid username or password'
@@ -125,15 +138,30 @@ app.post('/api/login', async (req, res) => {
       }
     }
   }
-});// Signup route: Creates a new user in the EMPLOYEES Oracle table
+});// ─────────────────────────────────────────────────────────────
+// SIGNUP — creates a new employee with a bcrypt-hashed password
+// ─────────────────────────────────────────────────────────────
 app.post('/api/signup', async (req, res) => {
   const { username, fullname, email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ success: false, error: 'Username and password are required.' });
+  // ── Server-side validation ──
+  if (!username || !username.trim()) {
+    return res.status(400).json({ success: false, error: 'Username is required.' });
+  }
+  if (username.trim().length < 3) {
+    return res.status(400).json({ success: false, error: 'Username must be at least 3 characters.' });
   }
   if (!fullname || !fullname.trim()) {
     return res.status(400).json({ success: false, error: 'Full name is required.' });
+  }
+  if (fullname.trim().length < 2) {
+    return res.status(400).json({ success: false, error: 'Full name must be at least 2 characters.' });
+  }
+  if (!password) {
+    return res.status(400).json({ success: false, error: 'Password is required.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ success: false, error: 'Password must be at least 6 characters.' });
   }
 
   let connection;
@@ -155,7 +183,6 @@ app.post('/api/signup', async (req, res) => {
       await connection.execute(`SELECT EMP_NAME FROM EMPLOYEES WHERE ROWNUM = 1`);
       hasNameCol = true;
     } catch (colErr) {
-      // Column does not exist — try to add it
       try {
         await connection.execute(
           `ALTER TABLE EMPLOYEES ADD (EMP_NAME VARCHAR2(200))`,
@@ -165,16 +192,18 @@ app.post('/api/signup', async (req, res) => {
         hasNameCol = true;
         console.log('[MIGRATE] Added EMP_NAME column to EMPLOYEES table.');
       } catch (alterErr) {
-        // Column might have been added by a concurrent request — tolerate
         console.warn('[MIGRATE] Could not add EMP_NAME column:', alterErr.message);
       }
     }
 
-    // ── 3. Generate new EMP_ID ──
+    // ── 3. Hash the password ──
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // ── 4. Generate new EMP_ID ──
     const maxIdRes = await connection.execute(`SELECT NVL(MAX(EMP_ID), 100) + 1 FROM EMPLOYEES`);
     const newEmpId = maxIdRes.rows[0][0];
 
-    // ── 4. Resolve default ROLE_ID (EMPLOYEE) ──
+    // ── 5. Resolve default ROLE_ID (EMPLOYEE) ──
     let defaultRoleId = null;
     try {
       const roleRes = await connection.execute(
@@ -183,7 +212,7 @@ app.post('/api/signup', async (req, res) => {
       if (roleRes.rows.length > 0) defaultRoleId = roleRes.rows[0][0];
     } catch (e) { /* no ROLE table — skip */ }
 
-    // ── 5. Resolve default DEPARTMENT_ID ──
+    // ── 6. Resolve default DEPARTMENT_ID ──
     let defaultDeptId = null;
     try {
       const deptRes = await connection.execute(
@@ -198,21 +227,19 @@ app.post('/api/signup', async (req, res) => {
 
     const empName = fullname.trim();
 
-    // ── 6. INSERT into EMPLOYEES ──
+    // ── 7. INSERT into EMPLOYEES with hashed password ──
     if (hasNameCol) {
-      // Full insert with EMP_NAME
       await connection.execute(
-        `INSERT INTO EMPLOYEES (EMP_ID, EMP_NAME, USERNAME, PASSWORD, EMAIL, ROLE_ID, DEPARTMENT_ID)
-         VALUES (:1, :2, :3, :4, :5, :6, :7)`,
-        [newEmpId, empName, username.trim(), password, userEmail, defaultRoleId, defaultDeptId],
+        `INSERT INTO EMPLOYEES (EMP_ID, EMP_NAME, USERNAME, PASSWORD, EMAIL, ROLE_ID, DEPARTMENT_ID, JOIN_DATE, CURRENT_SALARY)
+         VALUES (:1, :2, :3, :4, :5, :6, :7, SYSDATE, 200)`,
+        [newEmpId, empName, username.trim(), passwordHash, userEmail, defaultRoleId, defaultDeptId],
         { autoCommit: true }
       );
     } else {
-      // Fallback: insert without EMP_NAME (column unavailable)
       await connection.execute(
-        `INSERT INTO EMPLOYEES (EMP_ID, USERNAME, PASSWORD, EMAIL, ROLE_ID, DEPARTMENT_ID)
-         VALUES (:1, :2, :3, :4, :5, :6)`,
-        [newEmpId, username.trim(), password, userEmail, defaultRoleId, defaultDeptId],
+        `INSERT INTO EMPLOYEES (EMP_ID, USERNAME, PASSWORD, EMAIL, ROLE_ID, DEPARTMENT_ID, JOIN_DATE, CURRENT_SALARY)
+         VALUES (:1, :2, :3, :4, :5, :6, SYSDATE, 200)`,
+        [newEmpId, username.trim(), passwordHash, userEmail, defaultRoleId, defaultDeptId],
         { autoCommit: true }
       );
     }

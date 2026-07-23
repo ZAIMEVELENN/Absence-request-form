@@ -21,6 +21,18 @@ if (typeof window !== "undefined" && MOCK_MODE) {
   };
 }
 
+function toggleSidebar(visible) {
+  const sidebar = document.getElementById("sidebar");
+  if (!sidebar) return;
+  if (visible) {
+    sidebar.classList.remove("hidden");
+    document.body.style.marginLeft = "260px";
+  } else {
+    sidebar.classList.add("hidden");
+    document.body.style.marginLeft = "0";
+  }
+}
+
 // =============== DATA STRUCTURE ===============
 // We use an Array of Objects to store our requests in memory. 
 // This serves as our primary data structure for the search algorithm.
@@ -28,6 +40,11 @@ let requestDataStructure = [];
 const reviewRoles = ["CEO", "HR", "MANAGER"];
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Pages with a permanent sidebar need body margin
+  if (document.querySelector(".sidebar")) {
+    document.body.style.marginLeft = "260px";
+  }
+
   if (window.location.pathname.includes("reqboard.html")) {
       loadRequestData();
   }
@@ -62,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     applyRolePermissions(currentUser);
     autofillUserData(currentUser);
+    toggleSidebar(true);
   }
 
   // Universal Logout Handler
@@ -69,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       localStorage.removeItem("currentUser");
+      toggleSidebar(false);
       window.location.href = "index.html";
     });
   });
@@ -131,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         applyRolePermissions(result.user);
         autofillUserData(result.user);
+        toggleSidebar(true);
       } catch (err) {
         // Presentation Fallback: Allow quick demonstration offline if server is offline
         const mockAccounts = {
@@ -159,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         applyRolePermissions(fallbackUser);
         autofillUserData(fallbackUser);
+        toggleSidebar(true);
         loginBtn.disabled = false;
         loginBtn.textContent = " Log in";
       }
@@ -243,6 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         applyRolePermissions(result.user);
         autofillUserData(result.user);
+        toggleSidebar(true);
 
       } catch (err) {
         // Presentation Fallback offline mode
@@ -275,6 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         applyRolePermissions(newUser);
         autofillUserData(newUser);
+        toggleSidebar(true);
       } finally {
         submitSignupBtn.disabled = false;
         submitSignupBtn.textContent = "Create Account";
